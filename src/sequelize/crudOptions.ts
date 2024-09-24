@@ -1,6 +1,6 @@
-import { Transaction, WhereOptions } from 'sequelize'
-import { ISequelizeTransaction } from './transaction'
+import { WhereOptions } from 'sequelize'
 import { IDbBulkCreateOptions, IDbCreateOptions, IDbCrudOptions, IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions, IDbUpdateOptions } from '../dbClient/crudOptions'
+import { ISequelizeTransaction } from './transaction'
 
 export interface ISequelizeCrudOptions extends IDbCrudOptions {
   transaction?: ISequelizeTransaction

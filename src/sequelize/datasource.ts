@@ -1,4 +1,4 @@
-import { CommonUtils, StringUtils } from 'fwork.common.typescript'
+import { CommonUtils, StringUtils } from 'fwork-jsts-common'
 import { FindAttributeOptions, Includeable, ModelDefined, WhereOptions } from 'sequelize/types'
 import { MakeNullishOptional } from 'sequelize/types/utils'
 import { DataSourceUtils } from '..'

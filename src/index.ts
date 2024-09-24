@@ -1,4 +1,4 @@
-import { CommonUtils } from "fwork.common.typescript"
+import { CommonUtils } from "fwork-jsts-common"
 
 export enum DataSourceTypes {
   sequelize = 0,

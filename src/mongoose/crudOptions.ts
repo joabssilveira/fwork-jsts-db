@@ -1,4 +1,4 @@
-import mongoose, { FilterQuery } from 'mongoose'
+import { FilterQuery } from 'mongoose'
 import { IDbDeleteOptions, IDbGetOptions } from '../dbClient/crudOptions'
 
 export interface IMongooseGetOptions<T> extends IDbGetOptions {

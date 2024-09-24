@@ -1,7 +1,7 @@
 import { SchemaFieldTypes } from "redis"
 import { RedisConnection, RedisDataSource, RedisWhere } from "."
 import { IWhereOptions } from ".."
-import { CommonUtils, ConsoleLogUtils } from "fwork.common.typescript"
+import { CommonUtils, ConsoleLogUtils } from "fwork-jsts-common"
 
 // DECLARE YOUR MODEL INTERFACES OR CLASSES
 interface IMyInterface {

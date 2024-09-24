@@ -3,8 +3,6 @@ import { IDbConnection } from '../dbClient/connection';
 import { IRedisSettings, RedisEnv } from './env';
 
 export class RedisConnection implements IDbConnection {
-  t = createClient()
-
   client: RedisClientType<RedisDefaultModules & RedisModules, RedisFunctions, RedisScripts> | undefined
   env: IRedisSettings | undefined
 

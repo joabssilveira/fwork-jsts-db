@@ -23,6 +23,8 @@ export class DbConnectionSequelize implements IDbConnection {
       return new SequelizeTransaction({
         transactionObj
       })
+
+    return undefined
   }
 
   async open() {

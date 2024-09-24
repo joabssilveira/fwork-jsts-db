@@ -1,4 +1,4 @@
-import { CommonUtils, StringUtils } from 'fwork.common.typescript'
+import { CommonUtils, StringUtils } from 'fwork-jsts-common'
 import mongoose, { FilterQuery } from 'mongoose'
 import { DataSourceUtils } from '..'
 import {
