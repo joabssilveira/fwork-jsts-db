@@ -96,7 +96,8 @@ export class DataSourceUtils {
         endBraceCount++
         if (endBraceCount == startBraceCount) {
           lastEndBranceIdx = i
-          const item = tmpStr.substring((firstStartBraceIdx || 0), lastEndBranceIdx + 1)
+          console.log(lastEndBranceIdx)
+          // const item = tmpStr.substring((firstStartBraceIdx || 0), lastEndBranceIdx + 1)
 
           lastComma = (firstStartBraceIdx || 0) - 1
           firstStartBraceIdx = null
@@ -156,7 +157,7 @@ export class DataSourceUtils {
     nestedList: string | string[] | undefined,
   ): boolean => {
     for (var nestedName of nestedNames) {
-      return this.nestedIn(nestedName, nestedList)
+      return DataSourceUtils.nestedIn(nestedName, nestedList)
     }
 
     return false
@@ -200,7 +201,9 @@ export interface IWhereOptions<T> {
 }
 
 export abstract class Where<T> {
-  getWhere(options: IWhereOptions<T> | T) { }
+  getWhere(options: IWhereOptions<T> | T) { 
+    console.log(options)
+  }
 }
 
 export class MongoDbWhere<T> extends Where<T> {
