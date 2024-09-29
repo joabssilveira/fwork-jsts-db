@@ -287,6 +287,8 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
         this.onAfterUpdate(options, result)
       return options.data
     }
+
+    return undefined
   }
 
   async delete(options: IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>): Promise<number> {
