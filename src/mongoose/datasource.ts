@@ -82,7 +82,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
       // if (this.keyName.toLowerCase() == 'uuid' && !(d as any)[this.keyName])
       //   (d as any)[this.keyName] = CommonUtils.getNewUuid()
       if (this.keyName.toString().toLowerCase() == 'uuid' && StringUtils.isEmpty((d as any)[this.keyName]))
-        (d as any)[this.keyName] = CommonUtils.getNewUuid()
+        (d as any)[this.keyName] = CommonUtils.uuidv7
 
     // MASTER RELATIONS
     if (this.belongsTo?.length) {
@@ -172,7 +172,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
 
     // if (this.keyName.toLowerCase() == 'uuid' && !(options.data as any)[this.keyName])
     if (this.keyName.toString().toLowerCase() == 'uuid' && StringUtils.isEmpty((options.data as any)[this.keyName]))
-      (options.data as any)[this.keyName] = CommonUtils.getNewUuid()
+      (options.data as any)[this.keyName] = CommonUtils.uuidv7
 
     // TODO-specific mongoose
     const mongoDoc = new this.collectionModel!(options.data)
