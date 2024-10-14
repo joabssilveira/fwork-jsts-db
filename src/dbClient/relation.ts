@@ -38,5 +38,6 @@ export interface IDbRelationHasOne<Master, Child> extends IDbRelation<Master, Ch
 export type DbRelationTypeBelongsTo = DbRelationType.belongsTo
 
 export interface IDbRelationBelongsTo<Master, Child> extends IDbRelation<Master, Child, DbRelationType.belongsTo> {
-  createCascade?: boolean
+  createCascade?: boolean,
+  updateCascade?: boolean,
 }

@@ -8,6 +8,7 @@ import { SequelizeTransaction } from './transaction'
 import { SequelizeUtils } from './utils'
 import { IDbClientDataSource } from '../dbClient/datasource'
 import { IDbGetResult } from '../dbClient/results'
+import { uuidv7 } from 'uuidv7'
 
 export interface ISequelizeDataSource<T> extends IDbClientDataSource<
   T,
@@ -90,7 +91,7 @@ export abstract class SequelizeDataSource<T extends {}> implements ISequelizeDat
       // if (this.keyName.toLowerCase() == 'uuid' && !(d as any)[this.keyName])
       //   (d as any)[this.keyName] = CommonUtils.getNewUuid()
       if (this.keyName.toString().toLowerCase() == 'uuid' && StringUtils.isEmpty((d as any)[this.keyName]))
-        (d as any)[this.keyName] = CommonUtils.getNewUuid()
+        (d as any)[this.keyName] = uuidv7()
     
     // MASTER RELATIONS
     if (this.belongsTo?.length) {
@@ -182,7 +183,7 @@ export abstract class SequelizeDataSource<T extends {}> implements ISequelizeDat
 
     // if (this.keyName.toLowerCase() == 'uuid' && !(options.data as any)[this.keyName])
     if (this.keyName.toString().toLowerCase() == 'uuid' && StringUtils.isEmpty((options.data as any)[this.keyName]))
-      (options.data as any)[this.keyName] = CommonUtils.getNewUuid()
+      (options.data as any)[this.keyName] = uuidv7()
 
     // TODO-specific sequelize
     const transaction = options.transaction || this.transaction
@@ -276,6 +277,19 @@ export abstract class SequelizeDataSource<T extends {}> implements ISequelizeDat
     if (this.onBeforeUpdate)
       options = this.onBeforeUpdate(options)
 
+    // MASTER RELATIONS
+    if (this.belongsTo?.length)
+      for (let relation of this.belongsTo.filter(b => b.updateCascade)) {
+        let master = (options.data as any)[relation.as]
+        if (master) {
+          (options.data as any)[relation.foreignKey] = master[relation.masterKey]
+          relation.dataSourceBuilder().update({
+            ...options,
+            data: master
+          })
+        }
+      }
+
     const transaction = options?.transaction || this.transaction
     const update = await this.collectionModel!.update(options.data, {
       where: {
@@ -298,6 +312,8 @@ export abstract class SequelizeDataSource<T extends {}> implements ISequelizeDat
         return readed.payload[0]
       }
     }
+
+    return undefined
   }
 
   async delete(options: ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>): Promise<number> {

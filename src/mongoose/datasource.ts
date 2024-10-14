@@ -1,5 +1,6 @@
-import { CommonUtils, StringUtils } from 'fwork-jsts-common'
+import { StringUtils } from 'fwork-jsts-common'
 import mongoose, { FilterQuery } from 'mongoose'
+import { uuidv7 } from "uuidv7"
 import { DataSourceUtils } from '..'
 import {
   IDbBulkCreateOptions, IDbClientDataSource, IDbCreateOptions, IDbDeleteByKeyOptions, IDbDeleteOptions,
@@ -82,7 +83,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
       // if (this.keyName.toLowerCase() == 'uuid' && !(d as any)[this.keyName])
       //   (d as any)[this.keyName] = CommonUtils.getNewUuid()
       if (this.keyName.toString().toLowerCase() == 'uuid' && StringUtils.isEmpty((d as any)[this.keyName]))
-        (d as any)[this.keyName] = CommonUtils.uuidv7
+        (d as any)[this.keyName] = uuidv7()
 
     // MASTER RELATIONS
     if (this.belongsTo?.length) {
@@ -172,7 +173,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
 
     // if (this.keyName.toLowerCase() == 'uuid' && !(options.data as any)[this.keyName])
     if (this.keyName.toString().toLowerCase() == 'uuid' && StringUtils.isEmpty((options.data as any)[this.keyName]))
-      (options.data as any)[this.keyName] = CommonUtils.uuidv7
+      (options.data as any)[this.keyName] = uuidv7()
 
     // TODO-specific mongoose
     const mongoDoc = new this.collectionModel!(options.data)
@@ -277,6 +278,19 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
 
     if (this.keyName != '_id' && (options.data as any)._id)
       delete (options.data as any)._id
+
+    // MASTER RELATIONS
+    if (this.belongsTo?.length)
+      for (let relation of this.belongsTo.filter(b => b.updateCascade)) {
+        let master = (options.data as any)[relation.as]
+        if (master) {
+          (options.data as any)[relation.foreignKey] = master[relation.masterKey]
+          relation.dataSourceBuilder().update({
+            ...options,
+            data: master
+          })
+        }
+      }
 
     const result = await this.collectionModel.updateOne({
       [this.keyName]: (options.data as any)[this.keyName]
