@@ -61,31 +61,31 @@ export abstract class SequelizeDataSource<T extends {}> implements ISequelizeDat
   
   hasOne?: ISequelizeRelationHasOne<any, any>[] | undefined
 
-  onBeforeBulkCreate?: ((options: ISequelizeBulkCreateOptions<T>) => ISequelizeBulkCreateOptions<T>) | undefined
+  onBeforeBulkCreate?: ((options: ISequelizeBulkCreateOptions<T>) => ISequelizeBulkCreateOptions<T> | Promise<ISequelizeBulkCreateOptions<T>>) | undefined
   
-  onAfterBulkCreate?: ((options: ISequelizeBulkCreateOptions<T>, createdList?: T[] | undefined) => void) | undefined
+  onAfterBulkCreate?: ((options: ISequelizeBulkCreateOptions<T>, createdList?: T[] | undefined) => void | Promise<void>) | undefined
   
-  onBeforeCreate?: ((options: ISequelizeCreateOptions<T>) => ISequelizeCreateOptions<T>) | undefined
+  onBeforeCreate?: ((options: ISequelizeCreateOptions<T>) => ISequelizeCreateOptions<T> | Promise<ISequelizeCreateOptions<T>>) | undefined
   
-  onAfterCreate?: ((options: ISequelizeCreateOptions<T>, created?: T | undefined) => void) | undefined
+  onAfterCreate?: ((options: ISequelizeCreateOptions<T>, created?: T | undefined) => void | Promise<void>) | undefined
   
-  onBeforeRead?: ((options?: ISequelizeGetOptions<T> | undefined) => ISequelizeGetOptions<T> | undefined) | undefined
+  onBeforeRead?: ((options?: ISequelizeGetOptions<T> | undefined) => ISequelizeGetOptions<T> | undefined | Promise<ISequelizeGetOptions<T> | undefined>) | undefined
   
-  onAfterRead?: ((options?: ISequelizeGetOptions<T> | undefined, result?: IDbGetResult<T[]> | undefined) => void) | undefined
+  onAfterRead?: ((options?: ISequelizeGetOptions<T> | undefined, result?: IDbGetResult<T[]> | undefined) => void | Promise<void>) | undefined
   
-  onBeforeUpdate?: ((options: ISequelizeUpdateOptions<T>) => ISequelizeUpdateOptions<T>) | undefined
+  onBeforeUpdate?: ((options: ISequelizeUpdateOptions<T>) => ISequelizeUpdateOptions<T> | Promise<ISequelizeUpdateOptions<T>>) | undefined
   
-  onAfterUpdate?: ((options: ISequelizeUpdateOptions<T>, result?: { modifiedCount: number } | undefined) => void) | undefined
+  onAfterUpdate?: ((options: ISequelizeUpdateOptions<T>, result?: { modifiedCount: number } | undefined) => void | Promise<void>) | undefined
   
-  onBeforeDelete?: ((options: ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>) => ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>) | undefined
+  onBeforeDelete?: ((options: ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>) => ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any> | Promise<ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>>) | undefined
   
-  onAfterDelete?: ((options: ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>, result: number) => void) | undefined
+  onAfterDelete?: ((options: ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>, result: number) => void | Promise<void>) | undefined
 
   async bulkCreate(options: ISequelizeBulkCreateOptions<T>): Promise<T[] | undefined> {
     if (!options.data.length) return
 
     if (this.onBeforeBulkCreate)
-      options = this.onBeforeBulkCreate(options)
+      options = await this.onBeforeBulkCreate(options)
 
     for (let d of options.data) 
       // if (this.keyName.toLowerCase() == 'uuid' && !(d as any)[this.keyName])
@@ -159,14 +159,14 @@ export abstract class SequelizeDataSource<T extends {}> implements ISequelizeDat
     }
 
     if (this.onAfterBulkCreate)
-      this.onAfterBulkCreate({ data: options.data }, createdList)
+      await this.onAfterBulkCreate({ data: options.data }, createdList)
 
     return createdList
   }
 
   async create(options: ISequelizeCreateOptions<T>): Promise<T | undefined> {
     if (this.onBeforeCreate)
-      options = this.onBeforeCreate(options)
+      options = await this.onBeforeCreate(options)
 
     // MASTER RELATIONS
     if (this.belongsTo?.length)
@@ -216,14 +216,14 @@ export abstract class SequelizeDataSource<T extends {}> implements ISequelizeDat
       }
 
     if (this.onAfterCreate)
-      this.onAfterCreate(options, created)
+      await this.onAfterCreate(options, created)
 
     return created
   }
 
   async read(options?: ISequelizeGetOptions<T> | undefined): Promise<IDbGetResult<T[]> | undefined> {
     if (this.onBeforeRead)
-      options = this.onBeforeRead(options)
+      options = await this.onBeforeRead(options)
 
     let include: Includeable[] | undefined = this.getInclude({
       nested: options?.nested,
@@ -269,13 +269,13 @@ export abstract class SequelizeDataSource<T extends {}> implements ISequelizeDat
     }
 
     if (this.onAfterRead)
-      this.onAfterRead(options, result)
+      await this.onAfterRead(options, result)
     return result
   }
 
   async update(options: ISequelizeUpdateOptions<T>): Promise<T | undefined> {
     if (this.onBeforeUpdate)
-      options = this.onBeforeUpdate(options)
+      options = await this.onBeforeUpdate(options)
 
     // MASTER RELATIONS
     if (this.belongsTo?.length)
@@ -307,7 +307,7 @@ export abstract class SequelizeDataSource<T extends {}> implements ISequelizeDat
 
       if (readed?.payload?.length) {
         if (this.onAfterUpdate)
-          this.onAfterUpdate(options, readed.payload[0] as any)
+          await this.onAfterUpdate(options, readed.payload[0] as any)
 
         return readed.payload[0]
       }
@@ -321,7 +321,7 @@ export abstract class SequelizeDataSource<T extends {}> implements ISequelizeDat
       throw Error('Delete without parameters is not allowed')
 
     if (this.onBeforeDelete)
-      options = this.onBeforeDelete(options)
+      options = await this.onBeforeDelete(options)
 
     const childCascadeRelations = [
       ...(this.hasMany?.filter(r => r.deleteCascade) || []),
@@ -356,7 +356,7 @@ export abstract class SequelizeDataSource<T extends {}> implements ISequelizeDat
       })
 
     if (this.onAfterDelete)
-      this.onAfterDelete(options, result)
+      await this.onAfterDelete(options, result)
     return result
   }
 

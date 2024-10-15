@@ -1,4 +1,4 @@
-import { StringUtils } from 'fwork-jsts-common'
+import { CommonUtils, StringUtils } from 'fwork-jsts-common'
 import mongoose, { FilterQuery } from 'mongoose'
 import { uuidv7 } from "uuidv7"
 import { DataSourceUtils } from '..'
@@ -53,31 +53,31 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
 
   hasOne?: IDbRelationHasOne<any, any>[] | undefined
 
-  onBeforeBulkCreate?: ((options: IDbBulkCreateOptions<T>) => IDbBulkCreateOptions<T>) | undefined
+  onBeforeBulkCreate?: ((options: IDbBulkCreateOptions<T>) => IDbBulkCreateOptions<T> | Promise<IDbBulkCreateOptions<T>>) | undefined
 
-  onAfterBulkCreate?: ((options: IDbBulkCreateOptions<T>, createdList?: T[] | undefined) => void) | undefined
+  onAfterBulkCreate?: ((options: IDbBulkCreateOptions<T>, createdList?: T[] | undefined) => void | Promise<void>) | undefined
 
-  onBeforeCreate?: ((options: IDbCreateOptions<T>) => IDbCreateOptions<T>) | undefined
+  onBeforeCreate?: ((options: IDbCreateOptions<T>) => IDbCreateOptions<T> | Promise<IDbCreateOptions<T>>) | undefined
 
-  onAfterCreate?: ((options: IDbCreateOptions<T>, created?: T | undefined) => void) | undefined
+  onAfterCreate?: ((options: IDbCreateOptions<T>, created?: T | undefined) => void | Promise<void>) | undefined
 
-  onBeforeRead?: ((options?: IMongooseGetOptions<T> | undefined) => IMongooseGetOptions<T> | undefined) | undefined
+  onBeforeRead?: ((options?: IMongooseGetOptions<T> | undefined) => IMongooseGetOptions<T> | undefined | Promise<IMongooseGetOptions<T> | undefined>) | undefined
 
-  onAfterRead?: ((options?: IMongooseGetOptions<T> | undefined, result?: IDbGetResult<T[]> | undefined) => void) | undefined
+  onAfterRead?: ((options?: IMongooseGetOptions<T> | undefined, result?: IDbGetResult<T[]> | undefined) => void | Promise<void>) | undefined
 
-  onBeforeUpdate?: ((options: IDbUpdateOptions<T>) => IDbUpdateOptions<T>) | undefined
+  onBeforeUpdate?: ((options: IDbUpdateOptions<T>) => IDbUpdateOptions<T> | Promise<IDbUpdateOptions<T>>) | undefined
 
-  onAfterUpdate?: ((options: IDbUpdateOptions<T>, result?: { modifiedCount: number } | undefined) => void) | undefined
+  onAfterUpdate?: ((options: IDbUpdateOptions<T>, result?: { modifiedCount: number } | undefined) => void | Promise<void>) | undefined
 
-  onBeforeDelete?: ((options: IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>) => IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>) | undefined
+  onBeforeDelete?: ((options: IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>) => IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any> | Promise<IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>>) | undefined
 
-  onAfterDelete?: ((options: IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>, result: number) => void) | undefined
+  onAfterDelete?: ((options: IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>, result: number) => void | Promise<void>) | undefined
 
   async bulkCreate(options: IDbBulkCreateOptions<T>): Promise<T[] | undefined> {
     if (!options.data.length) return
 
     if (this.onBeforeBulkCreate)
-      options = this.onBeforeBulkCreate(options)
+      options = await this.onBeforeBulkCreate(options)
 
     for (let d of options.data)
       // if (this.keyName.toLowerCase() == 'uuid' && !(d as any)[this.keyName])
@@ -149,14 +149,14 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
     }
 
     if (this.onAfterBulkCreate)
-      this.onAfterBulkCreate({ data: options.data }, createdList)
+      await this.onAfterBulkCreate({ data: options.data }, createdList)
 
     return createdList
   }
 
   async create(options: IDbCreateOptions<T>): Promise<T | undefined> {
     if (this.onBeforeCreate)
-      options = this.onBeforeCreate(options)
+      options = await this.onBeforeCreate(options)
 
     // MASTER RELATIONS
     if (this.belongsTo?.length)
@@ -207,7 +207,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
       }
 
     if (this.onAfterCreate)
-      this.onAfterCreate(options, created)
+      await this.onAfterCreate(options, created)
 
     return created
   }
@@ -216,7 +216,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
     options = this.getOptionsRightTypeValues(options)
 
     if (this.onBeforeRead)
-      options = this.onBeforeRead(options)
+      options = await this.onBeforeRead(options)
 
     const $addFields: mongoose.PipelineStage.AddFields | undefined = options?.addFields ? { $addFields: options?.addFields } : undefined
 
@@ -268,16 +268,20 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
     }
 
     if (this.onAfterRead)
-      this.onAfterRead(options, result)
+      await this.onAfterRead(options, result)
     return result
   }
 
   async update(options: IDbUpdateOptions<T>): Promise<T | undefined> {
-    if (this.onBeforeUpdate)
-      options = this.onBeforeUpdate(options)
+    if (this.onBeforeUpdate) 
+      options = await this.onBeforeUpdate(options)
+
+    let data = {
+      ...options.data
+    }
 
     if (this.keyName != '_id' && (options.data as any)._id)
-      delete (options.data as any)._id
+      delete (data as any)._id
 
     // MASTER RELATIONS
     if (this.belongsTo?.length)
@@ -294,11 +298,11 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
 
     const result = await this.collectionModel.updateOne({
       [this.keyName]: (options.data as any)[this.keyName]
-    } as FilterQuery<T>, options.data as mongoose.UpdateQuery<T>, { new: true })
+    } as FilterQuery<T>, data as mongoose.UpdateQuery<T>, { new: true })
 
     if (result?.modifiedCount) {
       if (this.onAfterUpdate)
-        this.onAfterUpdate(options, result)
+        await this.onAfterUpdate(options, result)
       return options.data
     }
 
@@ -310,7 +314,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
       throw Error('Delete without parameters is not allowed')
 
     if (this.onBeforeDelete)
-      options = this.onBeforeDelete(options)
+      options = await this.onBeforeDelete(options)
 
     const childCascadeRelations = [
       ...(this.hasMany?.filter(r => r.deleteCascade) || []),
@@ -341,7 +345,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
     const result = deleteResult?.deletedCount || 0
 
     if (this.onAfterDelete)
-      this.onAfterDelete(options, result)
+      await this.onAfterDelete(options, result)
     return result
   }
 

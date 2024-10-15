@@ -15,16 +15,16 @@ export interface IDbClientDataSource<T, keyType,
   hasMany?: IDbRelationHasMany<any, any>[] | undefined
   hasOne?: IDbRelationHasOne<any, any>[] | undefined
 
-  onBeforeBulkCreate?: ((options: bulkCreateOptionsType) => bulkCreateOptionsType) | undefined
-  onAfterBulkCreate?: ((options: bulkCreateOptionsType, createdList?: T[]) => void) | undefined
-  onBeforeCreate?: ((options: createOptionsType) => createOptionsType) | undefined
-  onAfterCreate?: ((options: createOptionsType, created?: T) => void) | undefined
-  onBeforeRead?: ((options?: getOptionsType) => getOptionsType | undefined) | undefined
-  onAfterRead?: ((options?: getOptionsType, result?: IDbGetResult<T[]> | undefined) => void) | undefined
-  onBeforeUpdate?: ((options: updateOptionsType) => updateOptionsType) | undefined
-  onAfterUpdate?: ((options: updateOptionsType, result?: { modifiedCount: number } | undefined) => void) | undefined
-  onBeforeDelete?: ((options: deleteOptionsType | deleteByKeyOptionsType) => deleteOptionsType | deleteByKeyOptionsType) | undefined
-  onAfterDelete?: ((options: deleteOptionsType | deleteByKeyOptionsType, result: number) => void) | undefined
+  onBeforeBulkCreate?: ((options: bulkCreateOptionsType) => bulkCreateOptionsType | Promise<bulkCreateOptionsType>) | undefined
+  onAfterBulkCreate?: ((options: bulkCreateOptionsType, createdList?: T[]) => void | Promise<void>) | undefined
+  onBeforeCreate?: ((options: createOptionsType) => createOptionsType | Promise<createOptionsType>) | undefined
+  onAfterCreate?: ((options: createOptionsType, created?: T) => void | Promise<void>) | undefined
+  onBeforeRead?: ((options?: getOptionsType) => getOptionsType | undefined | Promise<getOptionsType | undefined>) | undefined
+  onAfterRead?: ((options?: getOptionsType, result?: IDbGetResult<T[]> | undefined) => void | Promise<void>) | undefined
+  onBeforeUpdate?: ((options: updateOptionsType) => updateOptionsType | Promise<updateOptionsType>) | undefined
+  onAfterUpdate?: ((options: updateOptionsType, result?: { modifiedCount: number } | undefined) => void | Promise<void>) | undefined
+  onBeforeDelete?: ((options: deleteOptionsType | deleteByKeyOptionsType) => deleteOptionsType | deleteByKeyOptionsType | Promise<deleteOptionsType | deleteByKeyOptionsType>) | undefined
+  onAfterDelete?: ((options: deleteOptionsType | deleteByKeyOptionsType, result: number) => void | Promise<void>) | undefined
 
   bulkCreate(options?: bulkCreateOptionsType): Promise<T[] | undefined> | T[] | undefined
   create(options: createOptionsType): Promise<T | undefined> | T | undefined
