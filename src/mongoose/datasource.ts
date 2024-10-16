@@ -98,7 +98,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
           }
         }
 
-        relation.dataSourceBuilder().bulkCreate({
+        await relation.dataSourceBuilder().bulkCreate({
           ...options,
           data: masters
         })
@@ -121,7 +121,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
           }
         }
 
-        relation.dataSourceBuilder().bulkCreate({
+        await relation.dataSourceBuilder().bulkCreate({
           ...options,
           data: children
         })
@@ -141,7 +141,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
           }
         }
 
-        relation.dataSourceBuilder().bulkCreate({
+        await relation.dataSourceBuilder().bulkCreate({
           ...options,
           data: children
         })
@@ -164,7 +164,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
         let master = (options.data as any)[relation.as]
         if (master) {
           (options.data as any)[relation.foreignKey] = master[relation.masterKey]
-          relation.dataSourceBuilder().create({
+          await relation.dataSourceBuilder().create({
             ...options,
             data: master
           })
@@ -186,7 +186,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
         let children: any[] = (options.data as any)[relation.as]
         if (children?.length) {
           children.forEach(c => c[relation.foreignKey] = (options.data as any)[relation.masterKey])
-          relation.dataSourceBuilder().bulkCreate({
+          await relation.dataSourceBuilder().bulkCreate({
             ...options,
             data: children
           })
@@ -199,7 +199,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
         let child = (options.data as any)[relation.as]
         if (child) {
           child[relation.foreignKey] = (options.data as any)[relation.masterKey]
-          relation.dataSourceBuilder().create({
+          await relation.dataSourceBuilder().create({
             ...options,
             data: child
           })
@@ -289,7 +289,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
         let master = (options.data as any)[relation.as]
         if (master) {
           (options.data as any)[relation.foreignKey] = master[relation.masterKey]
-          relation.dataSourceBuilder().update({
+          await relation.dataSourceBuilder().update({
             ...options,
             data: master
           })
@@ -330,7 +330,7 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
       for (let relation of childCascadeRelations) {
         const mastersIds = masterResponse?.payload?.map(m => (m as any)[relation.masterKey])
 
-        relation.dataSourceBuilder().delete({
+        await relation.dataSourceBuilder().delete({
           where: {
             [relation.foreignKey]: mastersIds
           }
