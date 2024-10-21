@@ -1,4 +1,13 @@
-import { FindAttributeOptions } from "sequelize"
+import { FindAttributeOptions, ModelDefined } from "sequelize";
+import { Fn, Literal } from "sequelize/types/utils";
+
+export type SequelizeIndexOptionField<T> = (keyof T | Fn | Literal | {
+  name: keyof T;
+  length?: number;
+  order?: "ASC" | "DESC";
+  collate?: string;
+  operator?: string;
+})
 
 export class SequelizeUtils {
   static getAttributes = (args: {
@@ -19,5 +28,74 @@ export class SequelizeUtils {
       }
 
     return attributes
-  } 
+  }
+
+  // associations
+
+  static createBelongsToAssociation<
+    SourceType extends object,
+    TargetType extends object
+  >(
+    sourceModel: ModelDefined<SourceType, any>,
+    targetModel: ModelDefined<TargetType, any>,
+    options: {
+      as: keyof SourceType;
+      foreignKey: keyof SourceType;
+      targetKey: keyof TargetType;
+    }
+  ) {
+    sourceModel.belongsTo(targetModel, options as any);
+  }
+
+  static createHasManyAssociation<
+    SourceType extends object,
+    TargetType extends object
+  >(
+    sourceModel: ModelDefined<SourceType, any>,
+    targetModel: ModelDefined<TargetType, any>,
+    options: {
+      as: keyof SourceType;
+      foreignKey: keyof TargetType;
+      sourceKey: keyof SourceType;
+    }
+  ) {
+    sourceModel.hasMany(targetModel, options as any);
+  }
+
+  static createHasOneAssociation<
+    SourceType extends object,
+    TargetType extends object
+  >(
+    sourceModel: ModelDefined<SourceType, any>,
+    targetModel: ModelDefined<TargetType, any>,
+    options: {
+      as: keyof SourceType;
+      foreignKey: keyof TargetType;
+      sourceKey: keyof SourceType;
+    }
+  ) {
+    sourceModel.hasOne(targetModel, options as any);
+  }
+
+  static createBelongsToManyAssociation<
+    SourceType extends object,
+    TargetType extends object
+  >(
+    sourceModel: ModelDefined<SourceType, any>,
+    targetModel: ModelDefined<TargetType, any>,
+    options: {
+      as: keyof SourceType;
+      foreignKey: keyof SourceType;
+      otherKey: keyof TargetType;
+      through: string | ModelDefined<any, any>;
+    }
+  ) {
+    sourceModel.belongsToMany(targetModel, options as any);
+  }
+
+  // indexes
+
+  static getIndexOptionField<T>(options: SequelizeIndexOptionField<T>): SequelizeIndexOptionField<T> {
+    return options
+  }
 }
