@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/joabssilveira/fwork-jsts-db/compare/v0.1.1-12...v0.1.1) (2024-10-23)
+
 ### [0.1.1-12](https://github.com/joabssilveira/fwork-jsts-db/compare/v0.1.1-10...v0.1.1-12) (2024-10-21)
 
 ### [0.1.1-11](https://github.com/joabsilveirasl7/sl7projects/compare/v0.1.1-16...v0.1.1-11) (2024-10-04)
