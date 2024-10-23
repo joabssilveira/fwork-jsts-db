@@ -1,5 +1,22 @@
-import { FindAttributeOptions, ModelDefined } from "sequelize";
+import { FindAttributeOptions, ModelDefined, Op, WhereOptions } from "sequelize";
 import { Fn, Literal } from "sequelize/types/utils";
+
+const mongooseToSequelizeOperators: Record<string, symbol> = {
+  $eq: Op.eq,
+  $gt: Op.gt,
+  $gte: Op.gte,
+  $in: Op.in,
+  $lt: Op.lt,
+  $lte: Op.lte,
+  $ne: Op.ne,
+  $nin: Op.notIn,
+  $not: Op.not,
+  $exists: Op.not,
+  $regex: Op.regexp, 
+
+  $and: Op.and,
+  $or: Op.or,
+};
 
 export type SequelizeIndexOptionField<T> = (keyof T | Fn | Literal | {
   name: keyof T;
@@ -97,5 +114,50 @@ export class SequelizeUtils {
 
   static getIndexOptionField<T>(options: SequelizeIndexOptionField<T>): SequelizeIndexOptionField<T> {
     return options
+  }
+
+  // 
+
+  static whereToWhereOptions<T>(where: Record<string, any>): WhereOptions<T> {
+    const whereOptions: any = {};
+  
+    for (const key in where) {
+      const value = where[key];
+  
+      // Verifica se é um operador lógico ($and, $or, etc.)
+      if (mongooseToSequelizeOperators[key]) {
+        (whereOptions as any)[mongooseToSequelizeOperators[key]] = value.map((v: any) =>
+          SequelizeUtils.whereToWhereOptions<T>(v)
+        );
+      }
+      // Se for uma consulta direta com operadores ($gt, $lt, $regex, etc.)
+      else if (typeof value === 'object' && !Array.isArray(value)) {
+        whereOptions[key] = {};
+        for (const operator in value) {
+          if (mongooseToSequelizeOperators[operator]) {
+            if (operator === '$regex') {
+              // Tratamento especial para $regex
+              const regexValue = value[operator];
+              if (typeof regexValue === 'string') {
+                // Aqui usamos Op.iRegexp para correspondência case-insensitive, caso necessário
+                (whereOptions[key] as any)[Op.regexp] = regexValue;
+              } else if (regexValue instanceof RegExp) {
+                // Se for uma instância de RegExp, também podemos usá-la diretamente
+                (whereOptions[key] as any)[Op.regexp] = regexValue.source;
+              }
+            } else {
+              // Tratamento normal dos outros operadores
+              (whereOptions[key] as any)[mongooseToSequelizeOperators[operator]] = value[operator];
+            }
+          }
+        }
+      }
+      // Igualdade simples
+      else {
+        whereOptions[key] = value;
+      }
+    }
+  
+    return whereOptions;
   }
 }

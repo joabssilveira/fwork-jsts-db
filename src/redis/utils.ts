@@ -1,9 +1,40 @@
-import { IWhereOptions, Where, WhereComparison } from "..";
+// import { IWhereOptions, Where, WhereComparison } from "..";
 
-type ComparisonOps = '$eq' | '$ne' | '$in' | '$nin' | '$bt' | '$ge' | '$gt' | '$le' | '$lt'
-type LogicalOps = '$and' | '$nand' | '$or' | '$xor' | '$not'
-const comparisonOps = ['$eq', '$ne', '$in', '$nin', '$bt', '$ge', '$gt', '$le', '$lt']
-const logicalOps = ['$and', '$nand', '$or', '$xor', '$not']
+export class RedisWhereComparison {
+  prop: string
+  value: any
+
+  constructor(prop: string, value: any) {
+    this.prop = prop
+    this.value = value
+  }
+
+  static isSearchComparisonOptions(obj: any): boolean {
+    return obj['prop'] && obj['value']
+  }
+}
+
+export interface IRedisWhereOptions<T> {
+  $gt?: RedisWhereComparison | Partial<T> | undefined,
+  $ge?: RedisWhereComparison | Partial<T> | undefined,
+  $lt?: RedisWhereComparison | Partial<T> | undefined,
+  $le?: RedisWhereComparison | Partial<T> | undefined,
+  $eq?: RedisWhereComparison | Partial<T> | undefined, // REDIS
+  $ne?: RedisWhereComparison | Partial<T> | undefined, // REDIS
+  $in?: RedisWhereComparison | Partial<T> | undefined,
+  $nin?: RedisWhereComparison | Partial<T> | undefined,
+
+  $and?: (IRedisWhereOptions<T> | Partial<T> | RedisWhereComparison)[] | undefined // REDIS
+  $nand?: (IRedisWhereOptions<T> | Partial<T> | RedisWhereComparison)[] | undefined
+  $or?: (IRedisWhereOptions<T> | Partial<T> | RedisWhereComparison)[] | undefined // REDIS
+  $xor?: (IRedisWhereOptions<T> | Partial<T> | RedisWhereComparison)[] | undefined
+  $not?: (IRedisWhereOptions<T> | Partial<T> | RedisWhereComparison)[] | undefined
+}
+
+type RedisComparisonOps = '$eq' | '$ne' | '$in' | '$nin' | '$bt' | '$ge' | '$gt' | '$le' | '$lt'
+type RedisLogicalOps = '$and' | '$nand' | '$or' | '$xor' | '$not'
+const redisComparisonOps = ['$eq', '$ne', '$in', '$nin', '$bt', '$ge', '$gt', '$le', '$lt']
+const redisLogicalOps = ['$and', '$nand', '$or', '$xor', '$not']
 
 export interface RedisSearchDocumentResult<T> {
   id: string,
@@ -15,7 +46,8 @@ export interface RedisSearchResult<T> {
   documents: RedisSearchDocumentResult<T>[]
 }
 
-export class RedisWhere<T> extends Where<T> {
+// export class RedisWhere<T> extends Where<T> {
+export class RedisWhere<T> {
   redisReplace(value: string) {
     const replacements: any = {
       ',': '\\,',
@@ -71,7 +103,7 @@ export class RedisWhere<T> extends Where<T> {
   // ]
 
   getPropValue(args: {
-    comparisonOp: ComparisonOps,
+    comparisonOp: RedisComparisonOps,
     value: any,
   }) {
     if (args.comparisonOp == '$eq') {
@@ -136,7 +168,7 @@ export class RedisWhere<T> extends Where<T> {
 
   getExpression(args: {
     propName: string,
-    comparisonOp: ComparisonOps,
+    comparisonOp: RedisComparisonOps,
     value: any,
   }) {
     var result: string = ''
@@ -172,7 +204,7 @@ export class RedisWhere<T> extends Where<T> {
     return result
   }
 
-  internalGetWhere(options: any, prevResult?: string, logicalOp?: LogicalOps, comparisonOp?: ComparisonOps) {
+  internalGetWhere(options: any, prevResult?: string, logicalOp?: RedisLogicalOps, comparisonOp?: RedisComparisonOps) {
     let result: string = prevResult || ''
     const propsNames = Object.getOwnPropertyNames(options)
 
@@ -186,9 +218,9 @@ export class RedisWhere<T> extends Where<T> {
       const propValue = options[propName]
 
       // LOGICAL OP
-      if (logicalOps.indexOf(propName) != -1) {
+      if (redisLogicalOps.indexOf(propName) != -1) {
         const prevLogicalOp = logicalOp
-        logicalOp = ((this.searchLogicalOpOverride.filter(i => i.key === propName)[0].op) as LogicalOps)
+        logicalOp = ((this.searchLogicalOpOverride.filter(i => i.key === propName)[0].op) as RedisLogicalOps)
 
         // LOOP PROP VALUE ITEMS
         for (var pvaiIdx = 0; pvaiIdx < (propValue as Array<any>).length; pvaiIdx++) {
@@ -202,14 +234,14 @@ export class RedisWhere<T> extends Where<T> {
         logicalOp = prevLogicalOp
       }
       // COMPARISON OP
-      else if (comparisonOps.indexOf(propName) != -1) {
+      else if (redisComparisonOps.indexOf(propName) != -1) {
         let tmp = propValue
-        if (WhereComparison.isSearchComparisonOptions(propValue)) {
+        if (RedisWhereComparison.isSearchComparisonOptions(propValue)) {
           tmp = {
             [propValue['prop']]: [propValue['value']]
           }
         }
-        result = this.internalGetWhere(tmp, result, logicalOp, (propName as ComparisonOps))
+        result = this.internalGetWhere(tmp, result, logicalOp, (propName as RedisComparisonOps))
       }
       // OBJECT VALUE
       else {
@@ -223,7 +255,7 @@ export class RedisWhere<T> extends Where<T> {
     return result
   }
 
-  getWhere(options: IWhereOptions<T> | Partial<T>) {
+  getWhere(options: IRedisWhereOptions<T> | Partial<T>) {
     return this.internalGetWhere(options)
   }
 }
@@ -231,7 +263,7 @@ export class RedisWhere<T> extends Where<T> {
 export class RedisUtils {
   static convertBooleansToIntegers(obj: any): any {
     return obj
-    
+
     if (typeof obj === 'object') {
       if (Array.isArray(obj)) {
         return obj.map(RedisUtils.convertBooleansToIntegers)

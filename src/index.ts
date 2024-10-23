@@ -3,6 +3,7 @@ import { CommonUtils } from "fwork-jsts-common/src"
 export enum DataSourceTypes {
   sequelize = 0,
   mongoose = 1,
+  redis = 3,
 }
 
 export class DataSourceUtils {
@@ -166,52 +167,5 @@ export class DataSourceUtils {
 
 // SEARCH OPTIONS
 
-export const whereLogicalOperators = ['$and', '$nand', '$or', '$xor', '$not']
-export const whereComparisonOperators = ['$gt', '$ge', '$lt', '$le', '$eq', '$ne', '$in', '$nin']
-
-export class WhereComparison {
-  prop: string
-  value: any
-
-  constructor(prop: string, value: any) {
-    this.prop = prop
-    this.value = value
-  }
-
-  static isSearchComparisonOptions(obj: any): boolean {
-    return obj['prop'] && obj['value']
-  }
-}
-
-export interface IWhereOptions<T> {
-  $gt?: WhereComparison | Partial<T> | undefined,
-  $ge?: WhereComparison | Partial<T> | undefined,
-  $lt?: WhereComparison | Partial<T> | undefined,
-  $le?: WhereComparison | Partial<T> | undefined,
-  $eq?: WhereComparison | Partial<T> | undefined, // REDIS
-  $ne?: WhereComparison | Partial<T> | undefined, // REDIS
-  $in?: WhereComparison | Partial<T> | undefined,
-  $nin?: WhereComparison | Partial<T> | undefined,
-
-  $and?: (IWhereOptions<T> | Partial<T> | WhereComparison)[] | undefined // REDIS
-  $nand?: (IWhereOptions<T> | Partial<T> | WhereComparison)[] | undefined
-  $or?: (IWhereOptions<T> | Partial<T> | WhereComparison)[] | undefined // REDIS
-  $xor?: (IWhereOptions<T> | Partial<T> | WhereComparison)[] | undefined
-  $not?: (IWhereOptions<T> | Partial<T> | WhereComparison)[] | undefined
-}
-
-export abstract class Where<T> {
-  getWhere(options: IWhereOptions<T> | T) { 
-    console.log(options)
-  }
-}
-
-export class MongoDbWhere<T> extends Where<T> {
-
-}
-export class SqlWhere<T> extends Where<T> {
-
-}
-export class NWhere<T> extends Where<T> {
-
-}
+// export const whereLogicalOperators = ['$and', '$nand', '$or', '$xor', '$not']
+// export const whereComparisonOperators = ['$gt', '$ge', '$lt', '$le', '$eq', '$ne', '$in', '$nin']

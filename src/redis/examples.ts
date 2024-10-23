@@ -1,7 +1,7 @@
 import { SchemaFieldTypes } from "redis"
 import { RedisConnection, RedisDataSource, RedisWhere } from "."
-import { IWhereOptions } from ".."
 import { CommonUtils, ConsoleLogUtils } from "fwork-jsts-common/src"
+import { IRedisWhereOptions } from "./utils"
 
 // DECLARE YOUR MODEL INTERFACES OR CLASSES
 interface IMyInterface {
@@ -154,13 +154,13 @@ ds.create({
 // MAKING QUERIES
 
 // RETURNS RECORDS WITH prop1='value1' and prop2=1
-const q1: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q1: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   prop1: 'value1',
   prop2: 1,
 }
 
 // query equivalent to above, note that '$eq' is used by default when not declared
-const q1a: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q1a: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   $eq: {
     prop1: 'value1',
     prop2: 1,
@@ -168,7 +168,7 @@ const q1a: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch>
 }
 
 // query equivalent to above, '$and' is used by default when not declared
-const q1b: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q1b: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   $and: [{
     prop1: 'value1'
   }, {
@@ -177,7 +177,7 @@ const q1b: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch>
 }
 
 // RETURNS RECORDS WITH prop1='value2' and prop2!=5
-const q2: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q2: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   $eq: {
     prop1: 'value2',
   },
@@ -187,7 +187,7 @@ const q2: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> 
 }
 
 // query equivalent to above
-const q2a: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q2a: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   prop1: 'value2',
   $ne: {
     prop2: 5,
@@ -195,7 +195,7 @@ const q2a: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch>
 }
 
 // query equivalent to above
-const q2b: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q2b: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   $and: [
     {
       prop1: 'value2',
@@ -209,7 +209,7 @@ const q2b: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch>
 }
 
 // query equivalent to above
-const q2c: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q2c: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   $and: [
     {
       $eq: {
@@ -225,7 +225,7 @@ const q2c: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch>
 }
 
 // RETURNS RECORDS WITH prop1='value1' or prop2=2
-const q3: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q3: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   $or: [
     {
       prop1: 'value1',
@@ -237,7 +237,7 @@ const q3: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> 
 }
 
 // query equivalent to above
-const q3a: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q3a: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   $or: [
     {
       $eq: {
@@ -253,7 +253,7 @@ const q3a: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch>
 }
 
 // RETURNS RECORDS WITH prop1='value1' or prop2!=2
-const q3b: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q3b: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   $or: [
     {
       prop1: 'value1',
@@ -267,7 +267,7 @@ const q3b: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch>
 }
 
 // MERGING OPERATORS. RESULT: (prop1 = 'value1') or (prop1 = 'value2' and prop2 != 3)
-const q4: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q4: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   $and: [
     {
       prop1: 'value1',
@@ -282,16 +282,16 @@ const q4: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> 
 }
 
 // CHILD OBJECT
-const q5: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q5: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   childProp1: 'child1'
 }
 
 // CHILDREN OBJECT
-const q6: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q6: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   childrenProp1: 'children1a'
 }
 
-const q7: Partial<IMyInterfaceForSearch> | IWhereOptions<IMyInterfaceForSearch> = {
+const q7: Partial<IMyInterfaceForSearch> | IRedisWhereOptions<IMyInterfaceForSearch> = {
   propBoolean: false
 }
 
