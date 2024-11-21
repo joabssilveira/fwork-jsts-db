@@ -1,17 +1,17 @@
 import { WhereOptions } from 'sequelize'
-import { IDbBulkCreateOptions, IDbCreateOptions, IDbCrudOptions, IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions, IDbUpdateOptions } from '../dbClient/crudOptions'
-import { ISequelizeTransaction } from './transaction'
+import { IDbBulkCreateOptions, IDbCreateOptions, IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions, IDbUpdateOptions } from '../dbClient/crudOptions'
+import { SequelizeTransaction } from './transaction'
 
-export interface ISequelizeCrudOptions extends IDbCrudOptions {
-  transaction?: ISequelizeTransaction
+export interface ISequelizeCrudOptions {
+  transaction?: SequelizeTransaction | undefined
 }
 
 export interface ISequelizeBulkCreateOptions<T> extends IDbBulkCreateOptions<T>, ISequelizeCrudOptions {
-  data: T[],
+  
 }
 
 export interface ISequelizeCreateOptions<T> extends IDbCreateOptions<T>, ISequelizeCrudOptions {
-  data: T
+  
 }
 
 export interface ISequelizeGetOptions<T> extends IDbGetOptions, ISequelizeCrudOptions {
@@ -19,7 +19,7 @@ export interface ISequelizeGetOptions<T> extends IDbGetOptions, ISequelizeCrudOp
 }
 
 export interface ISequelizeUpdateOptions<T> extends IDbUpdateOptions<T>, ISequelizeCrudOptions {
-  data: T
+  
 }
 
 export interface ISequelizeDeleteOptions<T> extends IDbDeleteOptions, ISequelizeCrudOptions {

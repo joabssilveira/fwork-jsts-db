@@ -1,11 +1,7 @@
 import { Transaction } from "sequelize";
 import { IDbTransaction } from "../dbClient/transaction";
 
-export interface ISequelizeTransaction extends IDbTransaction {
-  transactionObj: Transaction
-}
-
-export class SequelizeTransaction implements ISequelizeTransaction {
+export class SequelizeTransaction implements IDbTransaction {
   transactionObj: Transaction
 
   constructor(options: {
@@ -14,10 +10,13 @@ export class SequelizeTransaction implements ISequelizeTransaction {
     this.transactionObj = options.transactionObj
   }
 
-  commit() {
-    this.transactionObj.commit()
+  start() {
+    
   }
-  rollback() {
-    this.transactionObj.rollback()
+  async commit() {
+    await this.transactionObj.commit()
+  }
+  async rollback() {
+    await this.transactionObj.rollback()
   }
 }

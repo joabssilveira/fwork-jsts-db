@@ -1,21 +1,20 @@
 import { StringUtils } from 'fwork-jsts-common/src'
-import mongoose from 'mongoose'
-import { uuidv7 } from "uuidv7"
-import {
-  IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne
-} from '../../dbClient'
-import { MongooseTransaction } from '../transaction'
-import { IMongooseCreateOptions } from '../crudOptions'
+import { ModelDefined } from 'sequelize/types'
+import { MakeNullishOptional } from 'sequelize/types/utils'
+import { uuidv7 } from 'uuidv7'
+import { ISequelizeCreateOptions } from '../crudOptions'
+import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from '../relations'
+import { SequelizeTransaction } from '../transaction'
 
-export const mongooseExecCreate = async <T>(options: IMongooseCreateOptions<T>, optionsExt: {
-  collectionModel: mongoose.Model<T, {}, {}, {}, any>,
+export const sequelizeExecCreate = async <T extends {}>(options: ISequelizeCreateOptions<T>, optionsExt: {
+  collectionModel: ModelDefined<T, T>,
   keyName: keyof T,
-  transaction?: MongooseTransaction | undefined,
-  belongsTo?: IDbRelationBelongsTo<any, any>[] | undefined,
-  hasMany?: IDbRelationHasMany<any, any>[] | undefined,
-  hasOne?: IDbRelationHasOne<any, any>[] | undefined,
-  onBeforeCreate?: ((options: IMongooseCreateOptions<T>) => IMongooseCreateOptions<T> | Promise<IMongooseCreateOptions<T>>) | undefined
-  onAfterCreate?: (options: IMongooseCreateOptions<T>, created?: T | undefined) => void | Promise<void>
+  transaction?: SequelizeTransaction | undefined,
+  belongsTo?: ISequelizeRelationBelongsTo<any, any>[] | undefined,
+  hasMany?: ISequelizeRelationHasMany<any, any>[] | undefined,
+  hasOne?: ISequelizeRelationHasOne<any, any>[] | undefined,
+  onBeforeCreate?: ((options: ISequelizeCreateOptions<T>) => ISequelizeCreateOptions<T> | Promise<ISequelizeCreateOptions<T>>) | undefined,
+  onAfterCreate?: ((options: ISequelizeCreateOptions<T>, created?: T | undefined) => void | Promise<void>) | undefined,
 }): Promise<T | undefined> => {
   if (optionsExt.onBeforeCreate)
     options = await optionsExt.onBeforeCreate(options)
@@ -37,11 +36,9 @@ export const mongooseExecCreate = async <T>(options: IMongooseCreateOptions<T>, 
   if (optionsExt.keyName.toString().toLowerCase() == 'uuid' && StringUtils.isEmpty((options.data as any)[optionsExt.keyName]))
     (options.data as any)[optionsExt.keyName] = uuidv7()
 
-  // TODO-specific mongoose
-  const mongoDoc = new optionsExt.collectionModel!(options.data)
-  const session = options.transaction?.session ?? optionsExt.transaction?.session
-  const dbResponse = await mongoDoc.save({ session })
-  const created = dbResponse.toObject({ getters: true })
+  // TODO-specific sequelize
+  const transaction = options.transaction ?? optionsExt.transaction
+  const created: T = (await optionsExt.collectionModel!.create(options.data as unknown as MakeNullishOptional<T>, { transaction: transaction?.transactionObj })).dataValues
 
   // CHILDREN RELATIONS
   if (optionsExt.hasMany?.length)

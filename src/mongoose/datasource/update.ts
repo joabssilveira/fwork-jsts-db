@@ -1,16 +1,19 @@
 import mongoose, { FilterQuery } from 'mongoose'
 import {
-  IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne, IDbUpdateOptions
+  IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne,
 } from '../../dbClient'
+import { MongooseTransaction } from '../transaction'
+import { IMongooseUpdateOptions } from '../crudOptions'
 
-export const execUpdate = async <T>(options: IDbUpdateOptions<T>, optionsExt: {
+export const mongooseExecUpdate = async <T>(options: IMongooseUpdateOptions<T>, optionsExt: {
   collectionModel: mongoose.Model<T, {}, {}, {}, any>,
   keyName: keyof T,
+  transaction?: MongooseTransaction | undefined,
   belongsTo?: IDbRelationBelongsTo<any, any>[] | undefined,
   hasMany?: IDbRelationHasMany<any, any>[] | undefined,
   hasOne?: IDbRelationHasOne<any, any>[] | undefined,
-  onBeforeUpdate?: ((options: IDbUpdateOptions<T>) => IDbUpdateOptions<T> | Promise<IDbUpdateOptions<T>>) | undefined
-  onAfterUpdate?: ((options: IDbUpdateOptions<T>, result?: { modifiedCount: number } | undefined) => void | Promise<void>) | undefined
+  onBeforeUpdate?: ((options: IMongooseUpdateOptions<T>) => IMongooseUpdateOptions<T> | Promise<IMongooseUpdateOptions<T>>) | undefined
+  onAfterUpdate?: ((options: IMongooseUpdateOptions<T>, result?: { modifiedCount: number } | undefined) => void | Promise<void>) | undefined
 }): Promise<T | undefined> => {
   if (optionsExt.onBeforeUpdate)
     options = await optionsExt.onBeforeUpdate(options)
@@ -35,9 +38,11 @@ export const execUpdate = async <T>(options: IDbUpdateOptions<T>, optionsExt: {
       }
     }
 
+  // specific mongoose
+  const session = options.transaction?.session ?? optionsExt.transaction?.session
   const result = await optionsExt.collectionModel.updateOne({
     [optionsExt.keyName]: (options.data as any)[optionsExt.keyName]
-  } as FilterQuery<T>, data as mongoose.UpdateQuery<T>, { new: true })
+  } as FilterQuery<T>, data as mongoose.UpdateQuery<T>, { new: true, session })
 
   if (result?.modifiedCount) {
     if (optionsExt.onAfterUpdate)

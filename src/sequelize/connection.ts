@@ -9,7 +9,10 @@ export class DbConnectionSequelize implements IDbConnection {
   sequelize: Sequelize | undefined
   env: ISequelizeSettings | undefined
 
-  onBeforeSync?: () => void | undefined = undefined
+  onBeforeSync?: () => Promise<void | undefined> | void | undefined
+  onAfterSync?: () => Promise<void | undefined> | void | undefined
+  onBeforeOpen?: () => Promise<void | undefined> | void | undefined
+  onAfterOpen?: () => Promise<void | undefined> | void | undefined
 
   constructor(env?: ISequelizeSettings | undefined) {
     console.log('DbConnectionSequelize.constructor()');
@@ -31,6 +34,9 @@ export class DbConnectionSequelize implements IDbConnection {
     console.log('DbConnectionSequelize.open()')
     console.log(`env: ${JSON.stringify(this.env, null, 4)}`)
 
+    if (this.onBeforeOpen)
+      await this.onBeforeOpen()
+
     // const dialectModuleName =
     //   this.env?.dialect == 'mysql' ?
     //     'mysql2' : this.env?.dialect == 'mssql' ?
@@ -44,20 +50,25 @@ export class DbConnectionSequelize implements IDbConnection {
       database: this.env?.database,
       host: this.env?.host,
       dialect: this.env?.dialect,
-      // dialectModule
+      logging: this.env?.logging,
       dialectModule: this.env?.dialect == 'mssql' ?
-        tedious : mysql2
+        tedious : mysql2,
     })
+
+    if (this.onAfterOpen)
+      await this.onAfterOpen()
 
     if (this.env?.sync) {
       try {
         if (this.onBeforeSync)
-          this.onBeforeSync()
+          await this.onBeforeSync()
         await this.sequelize.sync({
           logging: this.env.logging,
           force: this.env.force,
           alter: this.env.alter
         })
+        if (this.onAfterSync)
+          await this.onAfterSync()
       } catch (error) {
         console.log('ERROR -> DbConnectionSequelize.open() this.sequelize.sync()')
         console.log(error)

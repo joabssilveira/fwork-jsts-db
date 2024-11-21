@@ -1,123 +1,30 @@
-import mongoose, { Schema } from "mongoose";
-import { uuidv7 } from "uuidv7";
-import { IDbCreateOptions, IDbTransaction, IDbUpdateOptions } from "../dbClient";
-import { MongooseDataSource } from "./datasource";
-
-export const MongooseTransactionStatus = {
-  pending: 0,
-  commited: 1,
-  rolledback: 2,
-} as const
-export type MongooseTransactionStatus = typeof MongooseTransactionStatus[keyof typeof MongooseTransactionStatus]
-
-export interface ITransactionUpdatedInfo<T> {
-  collectionName: string,
-  keyName: keyof T,
-  keyValue: any,
-  oldValue: T,
-}
-
-export interface ITransactionCreatedInfo<T> {
-  collectionName: string,
-  keyName: keyof T,
-  keyValue: any,
-}
-
-export interface IMongooseTransactionData<T> {
-  uuid: string,
-  status: MongooseTransactionStatus,
-  created?: ITransactionCreatedInfo<T>[]
-}
-
-export const mongooseTrasactionDataSchema = new Schema<IMongooseTransactionData<any>>({
-  uuid: {
-    type: String,
-    required: true,
-    unique: true,
-    default: uuidv7()
-  },
-  status: {
-    type: Number,
-    required: true,
-    default: MongooseTransactionStatus.pending,
-  }
-})
-
-export class MongooseTransactionsDataSource extends MongooseDataSource<IMongooseTransactionData<any>>{
-  
-}
+import { ClientSession, Connection } from "mongoose";
+import { IDbTransaction } from "../dbClient";
 
 export class MongooseTransaction implements IDbTransaction {
-  model: mongoose.Model<IMongooseTransactionData<any>, {}, {}, {}, any>
-  transaction: IMongooseTransactionData<any>
-  transactionDs: MongooseTransactionsDataSource
+  connection: Connection
+  session!: ClientSession
 
-  constructor(args: {
-    connection: mongoose.Connection
+  constructor(options: {
+    connection: Connection
   }) {
-    this.model = args.connection?.model<IMongooseTransactionData<any>>('trasactionSchema', mongooseTrasactionDataSchema, '_transactions')
-    this.transaction = {
-      uuid: uuidv7(),
-      status: MongooseTransactionStatus.pending,
-    }
-    this.transactionDs = new MongooseTransactionsDataSource({
-      collectionModel: this.model,
-      keyName: 'uuid',
-    })
+    this.connection = options.connection
 
-    this.transactionDs.create({
-      data: this.transaction
-    })
+    const getSession = async () => {
+      this.session = await this.connection.startSession()
+    } 
+    getSession()
   }
 
-  bulkCreate() {
-
-  }
-  create<T>(args: {
-    options: IDbCreateOptions<T>,
-    datasource: MongooseDataSource<T>,
-  }) {
-    
-  }
-  update<T>(args: {
-    options: IDbUpdateOptions<T>,
-    datasource: MongooseDataSource<T>,
-  }) {
-    let oldData = args.datasource.read({
-      where: {
-        [args.datasource.keyName as any]: args.options.data[args.datasource.keyName]
-      }
-    })
-    this.transaction.created = [
-      ...this.transaction.created ?? [],
-      {
-        collectionName: args.datasource.collectionModel.collection.name,
-        keyName: args.datasource.keyName,
-        keyValue: args.options.data[args.datasource.keyName]
-      }
-    ]
-    this.transactionDs.update({
-      data: this.transaction
-    })
-  }
-  remove() {
-
+  async start() {
+    this.session.startTransaction()
   }
 
   commit() {
-    this.transactionDs.update({
-      data: {
-        ...this.transaction,
-        status: MongooseTransactionStatus.commited
-      }
-    })
+    this.session.commitTransaction()
   }
+  
   rollback() {
-    this.transactionDs.update({
-      data: {
-        ...this.transaction,
-        status: MongooseTransactionStatus.rolledback
-      }
-    })
+    this.session.abortTransaction()
   }
 }

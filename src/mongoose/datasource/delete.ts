@@ -1,24 +1,26 @@
 import mongoose from 'mongoose'
 import {
-  IDbDeleteByKeyOptions, IDbDeleteOptions,
+  IDbDeleteOptions,
   IDbGetResult,
   IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne
 } from '../../dbClient'
-import { IMongooseDeleteOptions, IMongooseGetOptions } from '../crudOptions'
-import { execRead } from './read'
+import { IMongooseDeleteByKeyOptions, IMongooseDeleteOptions, IMongooseGetOptions } from '../crudOptions'
+import { mongooseExecRead } from './read'
+import { MongooseTransaction } from '../transaction'
 
-export const execDelete = async <T>(options: IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>, optionsExt: {
+export const mongooseExecDelete = async <T>(options: IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any>, optionsExt: {
   collectionModel: mongoose.Model<T, {}, {}, {}, any>,
   keyName: keyof T,
+  transaction?: MongooseTransaction | undefined,
   belongsTo?: IDbRelationBelongsTo<any, any>[] | undefined,
   hasMany?: IDbRelationHasMany<any, any>[] | undefined,
   hasOne?: IDbRelationHasOne<any, any>[] | undefined,
-  onBeforeDelete?: ((options: IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>) => IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any> | Promise<IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>>) | undefined,
-  onAfterDelete?: ((options: IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>, result: number) => void | Promise<void>) | undefined,
+  onBeforeDelete?: ((options: IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any>) => IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any> | Promise<IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any>>) | undefined,
+  onAfterDelete?: ((options: IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any>, result: number) => void | Promise<void>) | undefined,
   onBeforeRead?: ((options?: IMongooseGetOptions<T> | undefined) => IMongooseGetOptions<T> | undefined | Promise<IMongooseGetOptions<T> | undefined>) | undefined,
   onAfterRead?: ((options?: IMongooseGetOptions<T> | undefined, result?: IDbGetResult<T[]> | undefined) => void | Promise<void>) | undefined
 }): Promise<number> => {
-  if (!(options as IDbDeleteByKeyOptions<any>).key && !(options as IDbDeleteOptions).where)
+  if (!(options as IMongooseDeleteByKeyOptions<any>).key && !(options as IDbDeleteOptions).where)
     throw Error('Delete without parameters is not allowed')
 
   if (optionsExt.onBeforeDelete)
@@ -29,10 +31,10 @@ export const execDelete = async <T>(options: IMongooseDeleteOptions<T> | IDbDele
     ...(optionsExt.hasOne?.filter(r => r.deleteCascade) || [])
   ]
   if (childCascadeRelations.length) {
-    const masterResponse = await execRead({
+    const masterResponse = await mongooseExecRead({
       options: {
         where: (options as IDbDeleteOptions).where || {
-          [optionsExt.keyName]: (options as IDbDeleteByKeyOptions<any>).key
+          [optionsExt.keyName]: (options as IMongooseDeleteByKeyOptions<any>).key
         }
       },
       optionsExt: {
@@ -57,9 +59,10 @@ export const execDelete = async <T>(options: IMongooseDeleteOptions<T> | IDbDele
   }
 
   // TODO-specific mongoose
+  const session = options.transaction?.session ?? optionsExt.transaction?.session
   const deleteResult = (options as any).key ?
-    await optionsExt.collectionModel.deleteOne((options as IDbDeleteByKeyOptions<any>).key) :
-    await optionsExt.collectionModel.deleteMany((options as IMongooseDeleteOptions<T>).where)
+    await optionsExt.collectionModel.deleteOne((options as IMongooseDeleteByKeyOptions<any>).key, { session }) :
+    await optionsExt.collectionModel.deleteMany((options as IMongooseDeleteOptions<T>).where, { session })
   const result = deleteResult?.deletedCount || 0
 
   if (optionsExt.onAfterDelete)

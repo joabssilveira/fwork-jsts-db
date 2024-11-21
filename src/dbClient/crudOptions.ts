@@ -1,16 +1,12 @@
-export interface IDbCrudOptions {
-  // transaction?: IDbTransaction
-}
-
-export interface IDbBulkCreateOptions<T> extends IDbCrudOptions {
+export interface IDbBulkCreateOptions<T> {
   data: T[]
 }
 
-export interface IDbCreateOptions<T> extends IDbCrudOptions {
+export interface IDbCreateOptions<T> {
   data: T
 }
 
-export interface IDbGetOptions extends IDbCrudOptions {
+export interface IDbGetOptions {
   where?: any,
   sort?: any,
   select?: any,
@@ -21,14 +17,22 @@ export interface IDbGetOptions extends IDbCrudOptions {
   page?: number,
 }
 
-export interface IDbUpdateOptions<T> extends IDbCrudOptions {
+export interface IDbUpdateOptions<T> {
   data: T,
 }
 
-export interface IDbDeleteByKeyOptions<keyType> extends IDbCrudOptions {
+export interface IDbDeleteByKeyOptions<keyType> {
   key: keyType
 }
 
-export interface IDbDeleteOptions extends IDbCrudOptions {
+export interface IDbDeleteOptions {
   where: any,
+}
+
+// 
+
+export interface IDbResult<T> {
+  data: T,
+  success?: boolean,
+  msg?: string, 
 }

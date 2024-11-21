@@ -3,11 +3,13 @@ import { IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne } from '../
 import { IDbGetResult } from '../../dbClient/results'
 import { IMongooseGetOptions } from '../crudOptions'
 import { MongooseUtils } from '../utils'
+import { MongooseTransaction } from '../transaction'
 
-export const execRead = async <T>(args: {
+export const mongooseExecRead = async <T>(args: {
   options?: IMongooseGetOptions<T> | undefined,
   optionsExt: {
     collectionModel: mongoose.Model<T, {}, {}, {}, any>,
+    transaction?: MongooseTransaction | undefined,
     belongsTo?: IDbRelationBelongsTo<any, any>[] | undefined,
     hasMany?: IDbRelationHasMany<any, any>[] | undefined,
     hasOne?: IDbRelationHasOne<any, any>[] | undefined,
@@ -52,8 +54,10 @@ export const execRead = async <T>(args: {
   if (skip) aggregate.push({ $skip: skip })
   if (options?.limit) aggregate.push({ $limit: options.limit })
 
-  const readed = await optionsExt.collectionModel.aggregate(aggregate)
-    .collation({ locale: 'pt', strength: 2 }) //strength 2 for case-insensitive
+  const session = args.options?.transaction?.session ?? args.optionsExt.transaction?.session
+  // const readed = await optionsExt.collectionModel.aggregate(aggregate, { session, allowDiskUse: true }) // o allowDiskUse pode melhorar a performance no aggregate mas nos testes nao foi significante
+  const readed = await optionsExt.collectionModel.aggregate(aggregate, { session })
+    // .collation({ locale: 'pt', strength: 2 }) //strength 2 for case-insensitive (low performance on complex aggregate) nos testes o case-insensitive funcionou sem isso
 
   const readedCount = skip || options?.limit ?
     await (await optionsExt.collectionModel.count($match)) : readed?.length

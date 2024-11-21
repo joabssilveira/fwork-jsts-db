@@ -1,19 +1,20 @@
-import { StringUtils } from "fwork-jsts-common/src"
-import mongoose from "mongoose"
-import { uuidv7 } from "uuidv7"
-import { IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne } from "../../dbClient"
-import { IMongooseBulkCreateOptions } from "../crudOptions"
-import { MongooseTransaction } from "../transaction"
+import { StringUtils } from 'fwork-jsts-common/src'
+import { ModelDefined } from 'sequelize/types'
+import { MakeNullishOptional } from 'sequelize/types/utils'
+import { uuidv7 } from 'uuidv7'
+import { ISequelizeBulkCreateOptions } from '../crudOptions'
+import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from '../relations'
+import { SequelizeTransaction } from '../transaction'
 
-export const mongooseExecBulkCreate = async <T>(options: IMongooseBulkCreateOptions<T>, optionsExt: {
-  collectionModel: mongoose.Model<T, {}, {}, {}, any>,
+export const sequelizeExecBulkCreate = async <T extends {}>(options: ISequelizeBulkCreateOptions<T>, optionsExt: {
+  collectionModel: ModelDefined<T, T>,
   keyName: keyof T,
-  transaction?: MongooseTransaction | undefined,
-  belongsTo?: IDbRelationBelongsTo<any, any>[] | undefined,
-  hasMany?: IDbRelationHasMany<any, any>[] | undefined,
-  hasOne?: IDbRelationHasOne<any, any>[] | undefined,
-  onBeforeBulkCreate?: ((options: IMongooseBulkCreateOptions<T>) => IMongooseBulkCreateOptions<T> | Promise<IMongooseBulkCreateOptions<T>>) | undefined,
-  onAfterBulkCreate?: ((options: IMongooseBulkCreateOptions<T>, createdList?: T[] | undefined) => void | Promise<void>) | undefined
+  transaction?: SequelizeTransaction | undefined,
+  belongsTo?: ISequelizeRelationBelongsTo<any, any>[] | undefined,
+  hasMany?: ISequelizeRelationHasMany<any, any>[] | undefined,
+  hasOne?: ISequelizeRelationHasOne<any, any>[] | undefined,
+  onBeforeBulkCreate?: ((options: ISequelizeBulkCreateOptions<T>) => ISequelizeBulkCreateOptions<T> | Promise<ISequelizeBulkCreateOptions<T>>) | undefined,
+  onAfterBulkCreate?: ((options: ISequelizeBulkCreateOptions<T>, createdList?: T[] | undefined) => void | Promise<void>) | undefined,
 }): Promise<T[] | undefined> => {
   if (!options.data.length) return
 
@@ -44,9 +45,10 @@ export const mongooseExecBulkCreate = async <T>(options: IMongooseBulkCreateOpti
     }
   }
 
-  // TODO-specific mongoose
-  const session = options.transaction?.session ?? optionsExt.transaction?.session
-  const createdList = await optionsExt.collectionModel.insertMany(options.data, { session })
+  // TODO-specific sequelize
+  const transaction = options.transaction ?? optionsExt.transaction
+  const createdResponse = await optionsExt.collectionModel!.bulkCreate(options.data as unknown as MakeNullishOptional<T>[], { transaction: transaction?.transactionObj })
+  const createdList = createdResponse.map(i => i.get({ plain: true }))
 
   // CHILDREN RELATIONS
   if (optionsExt.hasMany?.length) {

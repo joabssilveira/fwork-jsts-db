@@ -1,5 +1,5 @@
 import { IDbConnection } from "./connection"
-import { IDbCrudOptions, IDbBulkCreateOptions, IDbCreateOptions, IDbGetOptions, IDbUpdateOptions, IDbDeleteOptions, IDbDeleteByKeyOptions, } from "./crudOptions"
+import { IDbBulkCreateOptions, IDbCreateOptions, IDbGetOptions, IDbUpdateOptions, IDbDeleteOptions, IDbDeleteByKeyOptions, } from "./crudOptions"
 import { IDbClientDataSource, } from "./datasource"
 import { DbRelationType, IDbRelation, IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne }
   from "./relation"
@@ -10,7 +10,7 @@ export {
   // CONNECTION
   IDbConnection,
   // CRUD OPTIONS
-  IDbCrudOptions, IDbBulkCreateOptions, IDbCreateOptions, IDbGetOptions, IDbUpdateOptions, IDbDeleteOptions, IDbDeleteByKeyOptions,
+  IDbBulkCreateOptions, IDbCreateOptions, IDbGetOptions, IDbUpdateOptions, IDbDeleteOptions, IDbDeleteByKeyOptions,
   // DATASOURCE
   IDbClientDataSource,
   // RELATION

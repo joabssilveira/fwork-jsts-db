@@ -1,6 +1,6 @@
 import { MongooseConnection } from './connection'
 import { IMongooseDeleteOptions, IMongooseGetOptions } from './crudOptions'
-import { IMongooseDataSource, MongooseDataSource } from './datasource'
+import { MongooseDataSource } from './datasource'
 import { MongooseUtils } from './utils'
 
 export {
@@ -9,7 +9,7 @@ export {
   // CRUD OPTIONS
   IMongooseDeleteOptions, IMongooseGetOptions,
   // DATASOURCE
-  IMongooseDataSource, MongooseDataSource,
+  MongooseDataSource,
   // UTILS
   MongooseUtils
 }

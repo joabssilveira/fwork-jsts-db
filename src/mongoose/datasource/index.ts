@@ -1,83 +1,88 @@
 import mongoose from 'mongoose'
 import {
-  IDbBulkCreateOptions, IDbClientDataSource, IDbCreateOptions, IDbDeleteByKeyOptions,
-  IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne, IDbUpdateOptions
+  IDbClientDataSource,
+  IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne,
 } from '../../dbClient'
 import { IDbGetResult } from '../../dbClient/results'
-import { IMongooseDeleteOptions, IMongooseGetOptions } from '../crudOptions'
-import { execBulkCreate } from './bulkCreate'
-import { execCreate } from './create'
-import { execDelete } from './delete'
-import { execRead } from './read'
-import { execUpdate } from './update'
+import { IMongooseBulkCreateOptions, IMongooseCreateOptions, IMongooseDeleteByKeyOptions, IMongooseDeleteOptions, IMongooseGetOptions, IMongooseUpdateOptions } from '../crudOptions'
+import { MongooseTransaction } from '../transaction'
+import { mongooseExecBulkCreate } from './bulkCreate'
+import { mongooseExecCreate } from './create'
+import { mongooseExecDelete } from './delete'
+import { mongooseExecRead } from './read'
+import { mongooseExecUpdate } from './update'
 
-export interface IMongooseDataSource<T> extends IDbClientDataSource<
+export abstract class MongooseDataSource<T> implements IDbClientDataSource<
   T,
   any,
-  IDbBulkCreateOptions<T>,
-  IDbCreateOptions<T>,
+  IMongooseBulkCreateOptions<T>,
+  IMongooseCreateOptions<T>,
   IMongooseGetOptions<T>,
-  IDbUpdateOptions<T>,
+  IMongooseUpdateOptions<T>,
   IMongooseDeleteOptions<T>,
-  IDbDeleteByKeyOptions<any>
+  IMongooseDeleteByKeyOptions<any>
 > {
-  bulkCreate(options?: IDbBulkCreateOptions<T>): Promise<T[] | undefined>
-  create(options?: IDbCreateOptions<T>): Promise<T | undefined>
-  read(options?: IMongooseGetOptions<T>): Promise<IDbGetResult<T[]> | undefined>
-  update(options?: IDbUpdateOptions<T>): Promise<T | undefined>
-  delete(options: IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>): Promise<number>
-}
-
-export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
-  // collectionModel: mongoose.Model<T, {}, {}, {}, any> | undefined
   collectionModel: mongoose.Model<T, {}, {}, {}, any>
-  keyName: keyof T
+  transaction: MongooseTransaction | undefined
 
   constructor(options: {
-    // collectionModel: mongoose.Model<T, {}, {}, {}, any> | undefined,
     collectionModel: mongoose.Model<T, {}, {}, {}, any>,
     keyName: keyof T,
+    transaction?: MongooseTransaction | undefined,
     hasMany?: IDbRelationHasMany<any, any>[] | undefined,
     hasOne?: IDbRelationHasOne<any, any>[] | undefined,
     belongsTo?: IDbRelationBelongsTo<any, any>[] | undefined,
   }) {
     this.collectionModel = options.collectionModel
     this.keyName = options.keyName
+    this.transaction = options.transaction
     this.hasMany = options.hasMany
     this.hasOne = options.hasOne
     this.belongsTo = options.belongsTo
   }
 
+  keyName: keyof T
   belongsTo?: IDbRelationBelongsTo<any, any>[] | undefined
-
   hasMany?: IDbRelationHasMany<any, any>[] | undefined
-
   hasOne?: IDbRelationHasOne<any, any>[] | undefined
 
-  onBeforeBulkCreate?: ((options: IDbBulkCreateOptions<T>) => IDbBulkCreateOptions<T> | Promise<IDbBulkCreateOptions<T>>) | undefined
+  onBeforeBulkCreate(options: IMongooseBulkCreateOptions<T>): IMongooseBulkCreateOptions<T> | Promise<IMongooseBulkCreateOptions<T>> {
+    return options
 
-  onAfterBulkCreate?: ((options: IDbBulkCreateOptions<T>, createdList?: T[] | undefined) => void | Promise<void>) | undefined
+  }
+  onAfterBulkCreate(options: IMongooseBulkCreateOptions<T>, createdList?: T[] | undefined): void | Promise<void> {
 
-  onBeforeCreate?: ((options: IDbCreateOptions<T>) => IDbCreateOptions<T> | Promise<IDbCreateOptions<T>>) | undefined
+  }
+  onBeforeCreate(options: IMongooseCreateOptions<T>): IMongooseCreateOptions<T> | Promise<IMongooseCreateOptions<T>> {
+    return options
+  }
+  onAfterCreate(options: IMongooseCreateOptions<T>, created?: T | undefined): void | Promise<void> {
 
-  onAfterCreate?: ((options: IDbCreateOptions<T>, created?: T | undefined) => void | Promise<void>) | undefined
+  }
+  onBeforeRead(options?: IMongooseGetOptions<T> | undefined): IMongooseGetOptions<T> | Promise<IMongooseGetOptions<T> | undefined> | undefined {
+    return options
+  }
+  onAfterRead(options?: IMongooseGetOptions<T> | undefined, result?: IDbGetResult<T[]> | undefined): void | Promise<void> {
 
-  onBeforeRead?: ((options?: IMongooseGetOptions<T> | undefined) => IMongooseGetOptions<T> | undefined | Promise<IMongooseGetOptions<T> | undefined>) | undefined
+  }
+  onBeforeUpdate(options: IMongooseUpdateOptions<T>): IMongooseUpdateOptions<T> | Promise<IMongooseUpdateOptions<T>> {
+    return options
+  }
+  onAfterUpdate(options: IMongooseUpdateOptions<T>, result?: { modifiedCount: number } | undefined): void | Promise<void> {
 
-  onAfterRead?: ((options?: IMongooseGetOptions<T> | undefined, result?: IDbGetResult<T[]> | undefined) => void | Promise<void>) | undefined
+  }
+  onBeforeDelete(options: IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any>): IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any> | Promise<IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any>> {
+    return options
+  }
+  onAfterDelete(options: IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any>, result: number): void | Promise<void> {
 
-  onBeforeUpdate?: ((options: IDbUpdateOptions<T>) => IDbUpdateOptions<T> | Promise<IDbUpdateOptions<T>>) | undefined
+  }
 
-  onAfterUpdate?: ((options: IDbUpdateOptions<T>, result?: { modifiedCount: number } | undefined) => void | Promise<void>) | undefined
-
-  onBeforeDelete?: ((options: IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>) => IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any> | Promise<IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>>) | undefined
-
-  onAfterDelete?: ((options: IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>, result: number) => void | Promise<void>) | undefined
-
-  async bulkCreate(options: IDbBulkCreateOptions<T>): Promise<T[] | undefined> {
-    return execBulkCreate(options, {
+  bulkCreate(options: IMongooseBulkCreateOptions<T>): Promise<T[] | undefined> {
+    return mongooseExecBulkCreate(options, {
       collectionModel: this.collectionModel,
       keyName: this.keyName,
+      transaction: options.transaction ?? this.transaction,
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
@@ -86,10 +91,11 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
     })
   }
 
-  async create(options: IDbCreateOptions<T>): Promise<T | undefined> {
-    return execCreate(options, {
+  create(options: IMongooseCreateOptions<T>): Promise<T | undefined> {
+    return mongooseExecCreate(options, {
       collectionModel: this.collectionModel,
       keyName: this.keyName,
+      transaction: options.transaction ?? this.transaction,
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
@@ -98,8 +104,8 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
     })
   }
 
-  async read(options?: IMongooseGetOptions<T> | undefined): Promise<IDbGetResult<T[]> | undefined> {
-    return execRead({
+  read(options?: IMongooseGetOptions<T> | undefined): Promise<IDbGetResult<T[]> | undefined> {
+    return mongooseExecRead({
       options,
       optionsExt: {
         collectionModel: this.collectionModel,
@@ -112,25 +118,25 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
     })
   }
 
-  async update(options: IDbUpdateOptions<T>): Promise<T | undefined> {
-    return execUpdate(
-      options, {
+  update(options: IMongooseUpdateOptions<T>): Promise<T | undefined> {
+    return mongooseExecUpdate(options, {
       collectionModel: this.collectionModel,
       keyName: this.keyName,
+      transaction: options.transaction ?? this.transaction,
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
       onBeforeUpdate: this.onBeforeUpdate,
       onAfterUpdate: this.onAfterUpdate,
-    }
-    )
+    })
   }
 
-  async delete(options: IMongooseDeleteOptions<T> | IDbDeleteByKeyOptions<any>): Promise<number> {
-    return execDelete(
+  delete(options: IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any>): Promise<number> {
+    return mongooseExecDelete(
       options, {
       collectionModel: this.collectionModel,
       keyName: this.keyName,
+      transaction: options.transaction ?? this.transaction,
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
@@ -138,13 +144,10 @@ export abstract class MongooseDataSource<T> implements IMongooseDataSource<T> {
       onAfterDelete: this.onAfterDelete,
       onBeforeRead: this.onBeforeRead,
       onAfterRead: this.onAfterRead,
-    }
-    )
+    })
   }
 
   isDate(value: any) {
     return new Date(value).getFullYear() ? true : false
   }
-
-
 }

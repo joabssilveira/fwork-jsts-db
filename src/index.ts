@@ -48,7 +48,7 @@ export class DataSourceUtils {
     let startBraceCount = 0
     let firstStartBraceIdx
     let endBraceCount = 0
-    let lastEndBranceIdx
+    // let lastEndBranceIdx
     let lastItem: string | undefined
     for (let i = 0; i < tmpStr.length; i++) {
       const letter = tmpStr[i]
@@ -96,14 +96,14 @@ export class DataSourceUtils {
       else if (letter == '}') {
         endBraceCount++
         if (endBraceCount == startBraceCount) {
-          lastEndBranceIdx = i
-          console.log(lastEndBranceIdx)
+          // lastEndBranceIdx = i
+          // console.log(lastEndBranceIdx)
           // const item = tmpStr.substring((firstStartBraceIdx || 0), lastEndBranceIdx + 1)
 
           lastComma = (firstStartBraceIdx || 0) - 1
           firstStartBraceIdx = null
           startBraceCount = 0
-          lastEndBranceIdx = null
+          // lastEndBranceIdx = null
           endBraceCount = 0
 
           // console.log(`item from close brace (not in array): ${item}`)
