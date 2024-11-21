@@ -3,6 +3,7 @@ import { ISequelizeSettings, SequelizeEnv } from './env'
 import { SequelizeTransaction } from './transaction'
 import * as tedious from 'tedious'
 import * as mysql2 from 'mysql2'
+import * as pg from 'pg'
 import { IDbConnection } from '../dbClient/connection'
 
 export class DbConnectionSequelize implements IDbConnection {
@@ -52,7 +53,7 @@ export class DbConnectionSequelize implements IDbConnection {
       dialect: this.env?.dialect,
       logging: this.env?.logging,
       dialectModule: this.env?.dialect == 'mssql' ?
-        tedious : mysql2,
+        tedious : this.env?.dialect == 'postgres' ? pg : mysql2,
     })
 
     if (this.onAfterOpen)

@@ -26,13 +26,21 @@ export interface IDbRelation<Master, Child, RelationType extends DbRelationType>
 export type DbRelationTypeHasMany = DbRelationType.hasMany
 
 export interface IDbRelationHasMany<Master, Child> extends IDbRelation<Master, Child, DbRelationType.hasMany> {
-  deleteCascade?: boolean
+  deleteCascade?: boolean,
+  updateCascadeOptions?: {
+    active: boolean,
+    childKeyName: keyof Child
+  },
 }
 
 export type DbRelationTypeHasOne = DbRelationType.hasOne
 
 export interface IDbRelationHasOne<Master, Child> extends IDbRelation<Master, Child, DbRelationType.hasOne> {
-  deleteCascade?: boolean
+  deleteCascade?: boolean,
+  updateCascadeOptions?: {
+    active: boolean,
+    childKeyName: keyof Child
+  },
 }
 
 export type DbRelationTypeBelongsTo = DbRelationType.belongsTo

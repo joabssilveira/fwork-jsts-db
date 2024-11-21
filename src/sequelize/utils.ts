@@ -1,4 +1,4 @@
-import { FindAttributeOptions, Includeable, ModelDefined, Op, WhereOptions } from "sequelize";
+import { FindAttributeOptions, HasManyOptions, Includeable, ModelDefined, Op, WhereOptions } from "sequelize";
 import { Fn, Literal, Where } from "sequelize/types/utils";
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from "./relations";
 import { DataSourceUtils } from "..";
@@ -38,6 +38,8 @@ export type SequelizeIncludeResult = {
   updatedWhere: WhereOptions | undefined
 }
 
+export type CascadeOptions = 'CASCADE' | 'RESTRICT' | 'SET NULL' | 'NO ACTION'
+
 export class SequelizeUtils {
   static getAttributes = (args: {
     selectedFields?: string | string[],
@@ -71,9 +73,13 @@ export class SequelizeUtils {
       as: keyof SourceType;
       foreignKey: keyof SourceType;
       targetKey: keyof TargetType;
+      onDelete: CascadeOptions;
+      onUpdate: CascadeOptions;
     }
   ) {
-    sourceModel.belongsTo(targetModel, options as any);
+    sourceModel.belongsTo(targetModel, {
+      ...options as any,
+    });
   }
 
   static createHasManyAssociation<
@@ -86,9 +92,13 @@ export class SequelizeUtils {
       as: keyof SourceType;
       foreignKey: keyof TargetType;
       sourceKey: keyof SourceType;
+      onDelete: CascadeOptions;
+      onUpdate: CascadeOptions;
     }
   ) {
-    sourceModel.hasMany(targetModel, options as any);
+    sourceModel.hasMany(targetModel, {
+      ...options as any,
+    });
   }
 
   static createHasOneAssociation<
@@ -101,9 +111,13 @@ export class SequelizeUtils {
       as: keyof SourceType;
       foreignKey: keyof TargetType;
       sourceKey: keyof SourceType;
+      onDelete: CascadeOptions;
+      onUpdate: CascadeOptions;
     }
   ) {
-    sourceModel.hasOne(targetModel, options as any);
+    sourceModel.hasOne(targetModel, {
+      ...options as any,
+    });
   }
 
   static createBelongsToManyAssociation<
@@ -117,9 +131,13 @@ export class SequelizeUtils {
       foreignKey: keyof SourceType;
       otherKey: keyof TargetType;
       through: string | ModelDefined<any, any>;
+      onDelete: CascadeOptions;
+      onUpdate: CascadeOptions;
     }
   ) {
-    sourceModel.belongsToMany(targetModel, options as any);
+    sourceModel.belongsToMany(targetModel, {
+      ...options as any,
+    });
   }
 
   // indexes
@@ -152,10 +170,10 @@ export class SequelizeUtils {
               const regexValue = value[operator];
               if (typeof regexValue === 'string') {
                 // Aqui usamos Op.iRegexp para correspondência case-insensitive, caso necessário
-                (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = `%${regexValue}%`;
+                (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = regexAsLike ? `%${regexValue}%` : regexValue;
               } else if (regexValue instanceof RegExp) {
                 // Se for uma instância de RegExp, também podemos usá-la diretamente
-                (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = `%${regexValue.source}%`;
+                (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = regexAsLike ? `%${regexValue.source}%` : regexValue.source;
               }
             } else {
               // Tratamento normal dos outros operadores

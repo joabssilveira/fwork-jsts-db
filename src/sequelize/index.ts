@@ -1,8 +1,8 @@
 import { DbConnectionSequelize } from './connection'
 import { ISequelizeCrudOptions, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeGetOptions, ISequelizeUpdateOptions, ISequelizeDeleteOptions, ISequelizeDeleteByKeyOptions, } from './crudOptions'
-import { ISequelizeDataSource } from './datasource'
+import { SequelizeDataSource } from './datasource'
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne, } from './relations'
-import { ISequelizeTransaction, SequelizeTransaction } from './transaction'
+import { SequelizeTransaction } from './transaction'
 import { SequelizeUtils } from './utils'
 
 export {
@@ -12,11 +12,11 @@ export {
   ISequelizeCrudOptions, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeGetOptions,
   ISequelizeUpdateOptions, ISequelizeDeleteOptions, ISequelizeDeleteByKeyOptions,
   // DATASOURCE
-  ISequelizeDataSource,
+  SequelizeDataSource,
   // RELATIONS
   ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne,
   // TRANSACTIONS
-  ISequelizeTransaction, SequelizeTransaction,
+  SequelizeTransaction,
   // UTILS
   SequelizeUtils,
 }
