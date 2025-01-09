@@ -1,4 +1,15 @@
 import { CommonUtils } from "fwork-jsts-common/src"
+import {
+  DbRelationType, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne, IDbBulkCreateOptions, IDbClientDataSource, IDbConnection, IDbCreateOptions,
+  IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions, IDbGetResult, IDbRelation, IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne,
+  IDbTransaction, IDbUpdateOptions
+} from './dbClient'
+import { DbConnectionMongoose, IMongooseDeleteOptions, IMongooseGetOptions, MongooseDataSource, MongooseUtils } from './mongoose'
+import { IRedisDataSource, IRedisDeleteOptions, IRedisGetOptions, RedisConnection, RedisDataSource, RedisSearchDocumentResult, RedisSearchResult, RedisWhere } from './redis'
+import {
+  DbConnectionSequelize, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeCrudOptions, ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions,
+  ISequelizeGetOptions, ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne, ISequelizeUpdateOptions, SequelizeDataSource, SequelizeTransaction, SequelizeUtils,
+} from './sequelize'
 
 export enum DataSourceTypes {
   sequelize = 0,
@@ -71,8 +82,8 @@ export class DataSourceUtils {
             if (!CommonUtils.isNullOrEmpty(item)) {
               result.push(item)
               lastItem = item
-            } 
-            
+            }
+
             // console.log(`item from last comma: ${lastItem}`)
           }
         }
@@ -87,8 +98,8 @@ export class DataSourceUtils {
           if (!CommonUtils.isNullOrEmpty(item)) {
             result.push(item)
             lastItem = item
-          } 
-          
+          }
+
           // console.log(`item from open brace: ${lastItem}`)
         }
         startBraceCount++
@@ -128,8 +139,8 @@ export class DataSourceUtils {
           if (!CommonUtils.isNullOrEmpty(item)) {
             result.push(item)
             lastItem = item
-          } 
-          
+          }
+
           // console.log(`last item: ${item}`)
         }
       }
@@ -149,7 +160,7 @@ export class DataSourceUtils {
         str: nestedList
       })
     }
-    
+
     return nestedList.indexOf(nestedName) != -1
   }
 
@@ -169,3 +180,16 @@ export class DataSourceUtils {
 
 // export const whereLogicalOperators = ['$and', '$nand', '$or', '$xor', '$not']
 // export const whereComparisonOperators = ['$gt', '$ge', '$lt', '$le', '$eq', '$ne', '$in', '$nin']
+
+export {
+  DbRelationType, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne, IDbBulkCreateOptions, IDbClientDataSource, IDbConnection, IDbCreateOptions,
+  IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions, IDbGetResult, IDbRelation, IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne,
+  IDbTransaction, IDbUpdateOptions,
+
+  DbConnectionMongoose, IMongooseDeleteOptions, IMongooseGetOptions, MongooseDataSource, MongooseUtils,
+
+  IRedisDataSource, IRedisDeleteOptions, IRedisGetOptions, RedisConnection, RedisDataSource, RedisSearchDocumentResult, RedisSearchResult, RedisWhere,
+
+  DbConnectionSequelize, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeCrudOptions, ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions,
+  ISequelizeGetOptions, ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne, ISequelizeUpdateOptions, SequelizeDataSource, SequelizeTransaction, SequelizeUtils,
+}

@@ -1,79 +1,79 @@
 {
-  "keywords": [
-    "database",
-    "db",
-    "mongoose",
-    "sequelize",
-    "redis",
-    "extension"
-  ],
-  "version": "2.0.2-0",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "homepage": "https://github.com/joabssilveira/fwork-jsts-db",
-  "files": [
-    "dist",
-    "src"
-  ],
-  "engines": {
-    "node": ">=10"
-  },
-  "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test --passWithNoTests",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
-    "size": "size-limit",
-    "analyze": "size-limit --why",
-    "release:major": "standard-version -M && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version major && git push origin && git push origin --tags && npm publish --access public",
-    "release:minor": "standard-version -m && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version minor && git push origin && git push origin --tags && npm publish --access public",
-    "release:patch": "standard-version -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin && git push origin --tags && npm publish --access public"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
-  },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
-  },
-  "name": "fwork-jsts-db",
-  "author": "joabssilveira",
-  "module": "dist/fwork-jsts-db.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/fwork-jsts-db.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/fwork-jsts-db.esm.js",
-      "limit": "10 KB"
-    }
-  ],
-  "devDependencies": {
-    "@size-limit/preset-small-lib": "^9.0.0",
-    "@types/tedious": "^4.0.10",
-    "husky": "^8.0.3",
-    "size-limit": "^9.0.0",
-    "standard-version": "^9.5.0",
-    "tsdx": "^0.14.1",
-    "tslib": "^2.6.2",
-    "typescript": "^5.6.3"
-  },
-  "dependencies": {
-    "@redis/search": "^1.1.3",
-    "dotenv": "^16.0.3",
-    "fwork-jsts-common": "^2.0.1-0",
-    "mongoose": "^6.8.1",
-    "mysql2": "^3.1.2",
-    "redis": "^4.6.6",
-    "sequelize": "^6.28.1",
-    "tedious": "^18.6.1",
-    "uuidv7": "^1.0.2"
-  }
+	"author": "joabssilveira",
+	"dependencies": {
+		"@redis/search": "^1.1.3",
+		"dotenv": "^16.0.3",
+		"fwork-jsts-common": "^2.0.1-0",
+		"mongoose": "^6.8.1",
+		"mysql2": "^3.1.2",
+		"redis": "^4.6.6",
+		"sequelize": "^6.28.1",
+		"tedious": "^18.6.1",
+		"uuidv7": "^1.0.2"
+	},
+	"devDependencies": {
+		"@size-limit/preset-small-lib": "^9.0.0",
+		"@types/tedious": "^4.0.10",
+		"husky": "^8.0.3",
+		"size-limit": "^9.0.0",
+		"standard-version": "^9.5.0",
+		"tsdx": "^0.14.1",
+		"tslib": "^2.6.2",
+		"typescript": "^5.6.3"
+	},
+	"engines": {
+		"node": ">=10"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"homepage": "https://github.com/joabssilveira/fwork-jsts-db",
+	"husky": {
+		"hooks": {
+			"pre-commit": "tsdx lint"
+		}
+	},
+	"keywords": [
+		"database",
+		"db",
+		"mongoose",
+		"sequelize",
+		"redis",
+		"extension"
+	],
+	"license": "MIT",
+	"main": "dist/index.js",
+	"module": "dist/fwork-jsts-db.esm.js",
+	"name": "fwork-jsts-db",
+	"prettier": {
+		"printWidth": 80,
+		"semi": true,
+		"singleQuote": true,
+		"trailingComma": "es5"
+	},
+	"scripts": {
+		"start": "tsdx watch",
+		"build": "tsdx build",
+		"test": "tsdx test --passWithNoTests",
+		"lint": "tsdx lint",
+		"prepare": "tsdx build",
+		"size": "size-limit",
+		"analyze": "size-limit --why",
+		"release:major": "standard-version -M && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version major && git push origin && git push origin --tags && npm publish --access public",
+		"release:minor": "standard-version -m && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version minor && git push origin && git push origin --tags && npm publish --access public",
+		"release:patch": "standard-version -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin && git push origin --tags && npm publish --access public"
+	},
+	"size-limit": [
+		{
+			"path": "dist/fwork-jsts-db.cjs.production.min.js",
+			"limit": "10 KB"
+		},
+		{
+			"path": "dist/fwork-jsts-db.esm.js",
+			"limit": "10 KB"
+		}
+	],
+	"typings": "dist/index.d.ts",
+	"version": "2.0.2-0"
 }

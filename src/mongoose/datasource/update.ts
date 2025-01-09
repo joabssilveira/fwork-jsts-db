@@ -51,6 +51,7 @@ export const mongooseExecUpdate = async <T>(options: IMongooseUpdateOptions<T>, 
       if (children && relation.updateCascadeOptions?.childKeyName) {
         // remover os que estao no banco e nao vieram nas opcoes
         await relation.dataSourceBuilder().delete({
+          ...options,
           where: {
             $and: [
               {
@@ -67,6 +68,7 @@ export const mongooseExecUpdate = async <T>(options: IMongooseUpdateOptions<T>, 
 
         // criar os que nao estao no banco e vieram nas opcoes
         const dbRes = await relation.dataSourceBuilder().read({
+          ...options,
           where: {
             [relation.foreignKey]: (options.data as any)[relation.masterKey],
           }
@@ -103,6 +105,7 @@ export const mongooseExecUpdate = async <T>(options: IMongooseUpdateOptions<T>, 
       if (child && relation.updateCascadeOptions?.childKeyName) {
         // consulta pra checar se existe no banco
         const dbRes = await relation.dataSourceBuilder().read({
+          ...options,
           where: {
             [relation.foreignKey]: (options.data as any)[relation.masterKey],
           }
