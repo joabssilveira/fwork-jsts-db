@@ -1,5 +1,5 @@
-import { IDbClientDataSource } from "./datasource"
 import { IDbBulkCreateOptions, IDbCreateOptions, IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions, IDbUpdateOptions } from "./crudOptions"
+import { IDbClientDataSource } from "./datasource"
 
 export enum DbRelationType {
   hasMany,

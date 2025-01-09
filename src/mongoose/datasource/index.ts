@@ -50,31 +50,31 @@ export abstract class MongooseDataSource<T> implements IDbClientDataSource<
     return options
 
   }
-  onAfterBulkCreate(options: IMongooseBulkCreateOptions<T>, createdList?: T[] | undefined): void | Promise<void> {
+  onAfterBulkCreate(_options: IMongooseBulkCreateOptions<T>, _createdList?: T[] | undefined): void | Promise<void> {
 
   }
   onBeforeCreate(options: IMongooseCreateOptions<T>): IMongooseCreateOptions<T> | Promise<IMongooseCreateOptions<T>> {
     return options
   }
-  onAfterCreate(options: IMongooseCreateOptions<T>, created?: T | undefined): void | Promise<void> {
+  onAfterCreate(_options: IMongooseCreateOptions<T>, _created?: T | undefined): void | Promise<void> {
 
   }
   onBeforeRead(options?: IMongooseGetOptions<T> | undefined): IMongooseGetOptions<T> | Promise<IMongooseGetOptions<T> | undefined> | undefined {
     return options
   }
-  onAfterRead(options?: IMongooseGetOptions<T> | undefined, result?: IDbGetResult<T[]> | undefined): void | Promise<void> {
+  onAfterRead(_options?: IMongooseGetOptions<T> | undefined, _result?: IDbGetResult<T[]> | undefined): void | Promise<void> {
 
   }
   onBeforeUpdate(options: IMongooseUpdateOptions<T>): IMongooseUpdateOptions<T> | Promise<IMongooseUpdateOptions<T>> {
     return options
   }
-  onAfterUpdate(options: IMongooseUpdateOptions<T>, result?: { modifiedCount: number } | undefined): void | Promise<void> {
+  onAfterUpdate(_options: IMongooseUpdateOptions<T>, _result?: { modifiedCount: number } | undefined): void | Promise<void> {
 
   }
   onBeforeDelete(options: IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any>): IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any> | Promise<IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any>> {
     return options
   }
-  onAfterDelete(options: IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any>, result: number): void | Promise<void> {
+  onAfterDelete(_options: IMongooseDeleteOptions<T> | IMongooseDeleteByKeyOptions<any>, _result: number): void | Promise<void> {
 
   }
 

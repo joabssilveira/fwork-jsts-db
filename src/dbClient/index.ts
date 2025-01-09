@@ -1,22 +1,21 @@
 import { IDbConnection } from "./connection"
-import { IDbBulkCreateOptions, IDbCreateOptions, IDbGetOptions, IDbUpdateOptions, IDbDeleteOptions, IDbDeleteByKeyOptions, } from "./crudOptions"
+import { IDbBulkCreateOptions, IDbCreateOptions, IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions, IDbUpdateOptions, } from "./crudOptions"
 import { IDbClientDataSource, } from "./datasource"
-import { DbRelationType, IDbRelation, IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne }
-  from "./relation"
+import { DbRelationType, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne, IDbRelation, IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne } from "./relation"
 import { IDbGetResult } from "./results"
 import { IDbTransaction } from "./transaction"
 
 export {
-  // CONNECTION
-  IDbConnection,
+  // RELATION
+  DbRelationType, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne,
   // CRUD OPTIONS
-  IDbBulkCreateOptions, IDbCreateOptions, IDbGetOptions, IDbUpdateOptions, IDbDeleteOptions, IDbDeleteByKeyOptions,
+  IDbBulkCreateOptions,
   // DATASOURCE
   IDbClientDataSource,
-  // RELATION
-  DbRelationType, IDbRelation, IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne,
+  // CONNECTION
+  IDbConnection, IDbCreateOptions, IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions,
   // RESULT
-  IDbGetResult,
+  IDbGetResult, IDbRelation, IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne,
   // TRANSACTION
-  IDbTransaction,
+  IDbTransaction, IDbUpdateOptions
 }

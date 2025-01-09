@@ -37,16 +37,44 @@ export class RedisDataSource<T, TWhereOptions> implements IRedisDataSource<T, TW
   belongsTo?: IDbRelationBelongsTo<any, any>[] | undefined;
   hasMany?: IDbRelationHasMany<any, any>[] | undefined;
   hasOne?: IDbRelationHasOne<any, any>[] | undefined;
-  onBeforeBulkCreate?: ((options: IDbBulkCreateOptions<T>) => IDbBulkCreateOptions<T>) | undefined;
-  onAfterBulkCreate?: ((options: IDbBulkCreateOptions<T>, createdList?: T[] | undefined) => void) | undefined;
-  onBeforeCreate?: ((options: IDbCreateOptions<T>) => IDbCreateOptions<T>) | undefined;
-  onAfterCreate?: ((options: IDbCreateOptions<T>, created?: T | undefined) => void) | undefined;
-  onBeforeRead?: ((options?: IRedisGetOptions<TWhereOptions> | undefined) => IRedisGetOptions<TWhereOptions> | undefined) | undefined;
-  onAfterRead?: ((options?: IRedisGetOptions<TWhereOptions> | undefined, result?: IDbGetResult<T[]> | undefined) => void) | undefined;
-  onBeforeUpdate?: ((options: IDbUpdateOptions<T>) => IDbUpdateOptions<T>) | undefined;
-  onAfterUpdate?: ((options: IDbUpdateOptions<T>, result?: { modifiedCount: number; } | undefined) => void) | undefined;
-  onBeforeDelete?: ((options: IRedisDeleteOptions | any) => IRedisDeleteOptions | any) | undefined;
-  onAfterDelete?: ((options: IRedisDeleteOptions | any, result: number) => void) | undefined;
+
+  onBeforeBulkCreate(options: IDbBulkCreateOptions<T>): IDbBulkCreateOptions<T> | Promise<IDbBulkCreateOptions<T>> {
+    return options
+
+  }
+  onAfterBulkCreate(_options: IDbBulkCreateOptions<T>, _createdList?: T[] | undefined): void | Promise<void> {
+
+  }
+  onBeforeCreate(options: IDbCreateOptions<T>): IDbCreateOptions<T> | Promise<IDbCreateOptions<T>> {
+    return options
+  }
+  onAfterCreate(_options: IDbCreateOptions<T>, _created?: T | undefined): void | Promise<void> {
+
+  }
+  onBeforeRead(options?: IRedisGetOptions<TWhereOptions> | undefined): IRedisGetOptions<TWhereOptions> | Promise<IRedisGetOptions<TWhereOptions> | undefined> | undefined {
+    return options
+  }
+  onAfterRead(_options?: IRedisGetOptions<TWhereOptions> | undefined, _result?: IDbGetResult<T[]> | undefined): void | Promise<void> {
+
+  }
+  onBeforeUpdate(options: IDbUpdateOptions<T>): IDbUpdateOptions<T> | Promise<IDbUpdateOptions<T>> {
+    return options
+  }
+  onAfterUpdate(_options: IDbUpdateOptions<T>, _result?: { modifiedCount: number } | undefined): void | Promise<void> {
+
+  }
+  // onBeforeDelete(options: IRedisDeleteOptions | IMongooseDeleteByKeyOptions<any>): IRedisDeleteOptions | IMongooseDeleteByKeyOptions<any> | Promise<IRedisDeleteOptions | IMongooseDeleteByKeyOptions<any>> {
+  //   return options
+  // }
+  // onAfterDelete(options: IRedisDeleteOptions | IMongooseDeleteByKeyOptions<any>, result: number): void | Promise<void> {
+
+  // }
+  onBeforeDelete(options: IRedisDeleteOptions): IRedisDeleteOptions | Promise<IRedisDeleteOptions> {
+    return options
+  }
+  onAfterDelete(_options: IRedisDeleteOptions, _result: number): void | Promise<void> {
+
+  }
 
   private pingText = 'PONG'
 
@@ -91,13 +119,13 @@ export class RedisDataSource<T, TWhereOptions> implements IRedisDataSource<T, TW
     return readed
   }
 
-  bulkCreate(options: IDbBulkCreateOptions<T>): Promise<T[] | undefined> {
+  bulkCreate(_options: IDbBulkCreateOptions<T>): Promise<T[] | undefined> {
     throw new Error('Method not implemented (RedisDataSource.bulkCreate).');
   }
 
   async create(options: IDbCreateOptions<T>): Promise<T | undefined> {
     if (this.onBeforeCreate)
-      options = this.onBeforeCreate(options)
+      options = await this.onBeforeCreate(options)
 
     options.data = RedisUtils.convertBooleansToIntegers(options.data)
 
@@ -111,7 +139,7 @@ export class RedisDataSource<T, TWhereOptions> implements IRedisDataSource<T, TW
 
   async read(options?: IRedisGetOptions<TWhereOptions> | undefined): Promise<IDbGetResult<T[]> | undefined> {
     if (this.onBeforeRead)
-      options = this.onBeforeRead(options)
+      options = await this.onBeforeRead(options)
 
     if (options?.where)
       options.where = RedisUtils.convertBooleansToIntegers(options.where)
@@ -144,7 +172,7 @@ export class RedisDataSource<T, TWhereOptions> implements IRedisDataSource<T, TW
 
   async update(options: IDbUpdateOptions<T>): Promise<T | undefined> {
     if (this.onBeforeUpdate)
-      options = this.onBeforeUpdate(options)
+      options = await this.onBeforeUpdate(options)
 
     options.data = RedisUtils.convertBooleansToIntegers(options.data)
 
@@ -160,7 +188,7 @@ export class RedisDataSource<T, TWhereOptions> implements IRedisDataSource<T, TW
   // TODO-IDbDeleteByKeyOptions on redis
   async delete(options: IRedisDeleteOptions): Promise<number> {
     if (this.onBeforeDelete)
-      options = this.onBeforeDelete(options)
+      options = await this.onBeforeDelete(options)
 
     this.checkConn()
     await this.conn.client?.json.del(`${this.collectionPrefix}:${options?.where}`)

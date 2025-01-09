@@ -51,31 +51,31 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
     return options
 
   }
-  onAfterBulkCreate(options: ISequelizeBulkCreateOptions<T>, createdList?: T[] | undefined): void | Promise<void> {
+  onAfterBulkCreate(_options: ISequelizeBulkCreateOptions<T>, _createdList?: T[] | undefined): void | Promise<void> {
 
   }
   onBeforeCreate(options: ISequelizeCreateOptions<T>): ISequelizeCreateOptions<T> | Promise<ISequelizeCreateOptions<T>> {
     return options
   }
-  onAfterCreate(options: ISequelizeCreateOptions<T>, created?: T | undefined): void | Promise<void> {
+  onAfterCreate(_options: ISequelizeCreateOptions<T>, _created?: T | undefined): void | Promise<void> {
 
   }
   onBeforeRead(options?: ISequelizeGetOptions<T> | undefined): ISequelizeGetOptions<T> | Promise<ISequelizeGetOptions<T> | undefined> | undefined {
     return options
   }
-  onAfterRead(options?: ISequelizeGetOptions<T> | undefined, result?: IDbGetResult<T[]> | undefined): void | Promise<void> {
+  onAfterRead(_options?: ISequelizeGetOptions<T> | undefined, _result?: IDbGetResult<T[]> | undefined): void | Promise<void> {
 
   }
   onBeforeUpdate(options: ISequelizeUpdateOptions<T>): ISequelizeUpdateOptions<T> | Promise<ISequelizeUpdateOptions<T>> {
     return options
   }
-  onAfterUpdate(options: ISequelizeUpdateOptions<T>, result?: { modifiedCount: number } | undefined): void | Promise<void> {
+  onAfterUpdate(_options: ISequelizeUpdateOptions<T>, _result?: { modifiedCount: number } | undefined): void | Promise<void> {
 
   }
   onBeforeDelete(options: ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>): ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any> | Promise<ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>> {
     return options
   }
-  onAfterDelete(options: ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>, result: number): void | Promise<void> {
+  onAfterDelete(_options: ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>, _result: number): void | Promise<void> {
 
   }
 

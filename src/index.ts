@@ -182,14 +182,9 @@ export class DataSourceUtils {
 // export const whereComparisonOperators = ['$gt', '$ge', '$lt', '$le', '$eq', '$ne', '$in', '$nin']
 
 export {
-  DbRelationType, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne, IDbBulkCreateOptions, IDbClientDataSource, IDbConnection, IDbCreateOptions,
+
+  DbConnectionMongoose, DbConnectionSequelize, DbRelationType, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne, IDbBulkCreateOptions, IDbClientDataSource, IDbConnection, IDbCreateOptions,
   IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions, IDbGetResult, IDbRelation, IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne,
-  IDbTransaction, IDbUpdateOptions,
-
-  DbConnectionMongoose, IMongooseDeleteOptions, IMongooseGetOptions, MongooseDataSource, MongooseUtils,
-
-  IRedisDataSource, IRedisDeleteOptions, IRedisGetOptions, RedisConnection, RedisDataSource, RedisSearchDocumentResult, RedisSearchResult, RedisWhere,
-
-  DbConnectionSequelize, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeCrudOptions, ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions,
-  ISequelizeGetOptions, ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne, ISequelizeUpdateOptions, SequelizeDataSource, SequelizeTransaction, SequelizeUtils,
+  IDbTransaction, IDbUpdateOptions, IMongooseDeleteOptions, IMongooseGetOptions, IRedisDataSource, IRedisDeleteOptions, IRedisGetOptions, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeCrudOptions, ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions,
+  ISequelizeGetOptions, ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne, ISequelizeUpdateOptions, MongooseDataSource, MongooseUtils, RedisConnection, RedisDataSource, RedisSearchDocumentResult, RedisSearchResult, RedisWhere, SequelizeDataSource, SequelizeTransaction, SequelizeUtils
 }

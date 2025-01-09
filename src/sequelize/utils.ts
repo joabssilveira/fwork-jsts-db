@@ -1,7 +1,7 @@
-import { FindAttributeOptions, HasManyOptions, Includeable, ModelDefined, Op, WhereOptions } from "sequelize";
-import { Fn, Literal, Where } from "sequelize/types/utils";
-import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from "./relations";
+import { FindAttributeOptions, Includeable, ModelDefined, Op, WhereOptions } from "sequelize";
+import { Fn, Literal } from "sequelize/types/utils";
 import { DataSourceUtils } from "..";
+import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from "./relations";
 
 const mongooseToSequelizeOperators: Record<string, symbol> = {
   $eq: Op.eq,

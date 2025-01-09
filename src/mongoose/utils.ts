@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
-import { IMongooseGetOptions } from './crudOptions'
-import { IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne } from '../dbClient'
 import { DataSourceUtils } from '..'
+import { IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne } from '../dbClient'
+import { IMongooseGetOptions } from './crudOptions'
 
 export class MongooseUtils {
   static getProjectToAggregate = <T>(options?: IMongooseGetOptions<T>) => {
@@ -17,14 +17,14 @@ export class MongooseUtils {
     return $project
   }
 
-  static getObjectId(objectId: any): mongoose.Types.ObjectId | undefined {
-    if (typeof objectId === 'string' && mongoose.isValidObjectId(objectId))
-      return new mongoose.Types.ObjectId(objectId)
-    else if (mongoose.isValidObjectId(objectId))
-      return objectId
-    else
-      return new mongoose.Types.ObjectId()
-  }
+  // static getObjectId(objectId: any): mongoose.Types.ObjectId | undefined {
+  //   if (typeof objectId === 'string' && mongoose.isValidObjectId(objectId))
+  //     return new mongoose.Types.ObjectId(objectId)
+  //   else if (mongoose.isValidObjectId(objectId))
+  //     return objectId
+  //   else
+  //     return new mongoose.Types.ObjectId()
+  // }
 
   static getLookupMaster = (options: {
     masterKey: string,
@@ -41,14 +41,14 @@ export class MongooseUtils {
           { $match: { $expr: { $eq: [`$${options.masterKey}`, '$$masterUuid'] } } }
         ]
       }
-    }
+    };
 
     const unwindMaster: mongoose.PipelineStage.Unwind = {
       $unwind: {
         path: `$${options.as}`,
         preserveNullAndEmptyArrays: true
       }
-    }
+    };
 
     return {
       lookupMaster,
@@ -97,7 +97,7 @@ export class MongooseUtils {
     fromChildrenCollection: string,
     as: string
   }) => {
-    const lookupChild: mongoose.PipelineStage.Lookup = this.getLookupChildren(options).lookupChildren
+    const lookupChild: mongoose.PipelineStage.Lookup = MongooseUtils.getLookupChildren(options).lookupChildren;
 
     const unwindChild: mongoose.PipelineStage.Unwind = {
       $unwind: {
@@ -120,7 +120,7 @@ export class MongooseUtils {
     hasOne?: IDbRelationHasOne<any, any>[] | undefined,
     previousRelationAs?: string
   }): (mongoose.PipelineStage | mongoose.PipelineStage.Lookup | mongoose.PipelineStage.Unwind)[] | undefined {
-    if (!options?.nested) return
+    if (!options?.nested) return undefined
 
     let result: mongoose.PipelineStage[] | undefined
 
@@ -141,7 +141,7 @@ export class MongooseUtils {
           const relationDs = relation.dataSourceBuilder()
 
           if (relationDs.belongsTo?.length || relationDs.hasMany?.length || relationDs.hasOne?.length) {
-            const pipeLines = this.getLookupPipeLines({
+            const pipeLines = MongooseUtils.getLookupPipeLines({
               nested: options.nested,
               dsCollection: (relationDs as any).collectionModel.collection.collectionName,
               belongsTo: relationDs.belongsTo,
@@ -183,7 +183,7 @@ export class MongooseUtils {
           const relationDs = relation.dataSourceBuilder()
 
           if (relationDs.belongsTo?.length || relationDs.hasMany?.length || relationDs.hasOne?.length) {
-            const pipeLines = this.getLookupPipeLines({
+            const pipeLines = MongooseUtils.getLookupPipeLines({
               nested: options.nested,
               dsCollection: (relationDs as any).collectionModel.collection.collectionName,
               belongsTo: relationDs.belongsTo,
@@ -224,7 +224,7 @@ export class MongooseUtils {
           const relationDs = relation.dataSourceBuilder()
 
           if (relationDs.belongsTo?.length || relationDs.hasMany?.length || relationDs.hasOne?.length) {
-            const pipeLines = this.getLookupPipeLines({
+            const pipeLines = MongooseUtils.getLookupPipeLines({
               nested: options.nested,
               dsCollection: (relationDs as any).collectionModel.collection.collectionName,
               belongsTo: relationDs.belongsTo,
@@ -256,7 +256,7 @@ export class MongooseUtils {
       for (const propName in options) {
         if (typeof options[propName] === 'string') {
           if (propName.indexOf('_id') != -1 || (treeProp || '').indexOf('_id') != -1) {
-            options[propName] = new mongoose.Types.ObjectId(options[propName])
+            options[propName] = new mongoose.Types.ObjectId(options[propName]);
           }
         }
         else if (Array.isArray(options[propName])) {
@@ -273,7 +273,7 @@ export class MongooseUtils {
               options[propName][options_propArray_idx] = new mongoose.Types.ObjectId(options[propName][options_propArray_idx].value)
             }
             else
-              options[propName][options_propArray_idx] = this.getOptionsRightTypeValues(options[propName][options_propArray_idx], treeProp ? treeProp + propName : propName)
+              options[propName][options_propArray_idx] = MongooseUtils.getOptionsRightTypeValues(options[propName][options_propArray_idx], treeProp ? treeProp + propName : propName)
           }
         }
         else if (typeof options[propName] === 'object') {
@@ -284,7 +284,7 @@ export class MongooseUtils {
             options[propName] = new mongoose.Types.ObjectId(options[propName].value)
           }
           else
-            options[propName] = this.getOptionsRightTypeValues(options[propName], treeProp ? treeProp + propName : propName)
+            options[propName] = MongooseUtils.getOptionsRightTypeValues(options[propName], treeProp ? treeProp + propName : propName)
         }
 
       }

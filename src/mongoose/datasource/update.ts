@@ -2,8 +2,8 @@ import mongoose, { FilterQuery } from 'mongoose'
 import {
   IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne,
 } from '../../dbClient'
-import { MongooseTransaction } from '../transaction'
 import { IMongooseUpdateOptions } from '../crudOptions'
+import { MongooseTransaction } from '../transaction'
 
 export const mongooseExecUpdate = async <T>(options: IMongooseUpdateOptions<T>, optionsExt: {
   collectionModel: mongoose.Model<T, {}, {}, {}, any>,

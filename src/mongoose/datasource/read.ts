@@ -2,8 +2,8 @@ import mongoose from 'mongoose'
 import { IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne } from '../../dbClient'
 import { IDbGetResult } from '../../dbClient/results'
 import { IMongooseGetOptions } from '../crudOptions'
-import { MongooseUtils } from '../utils'
 import { MongooseTransaction } from '../transaction'
+import { MongooseUtils } from '../utils'
 
 export const mongooseExecRead = async <T>(args: {
   options?: IMongooseGetOptions<T> | undefined,
