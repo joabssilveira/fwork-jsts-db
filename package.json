@@ -37,7 +37,9 @@
 		"extension"
 	],
 	"license": "MIT",
-	"main": "dist/index.js",
+	"main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
 	"name": "fwork-jsts-db",
 	"prettier": {
 		"printWidth": 80,
@@ -46,11 +48,16 @@
 		"trailingComma": "es5"
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.json",
-		"release:major": "standard-version -M && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version major && git push origin && git push origin --tags && npm publish --access public",
+		"build": "tsc --project tsconfig.cjs.json && tsc --project tsconfig.esm.json",
+    "release:major": "standard-version -M && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version major && git push origin && git push origin --tags && npm publish --access public",
 		"release:minor": "standard-version -m && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version minor && git push origin && git push origin --tags && npm publish --access public",
 		"release:patch": "standard-version -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin && git push origin --tags && npm publish --access public"
 	},
-	"types": "dist/index.d.ts",
-	"version": "2.0.3"
+	"version": "2.0.3",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js"
+    }
+  }
 }
