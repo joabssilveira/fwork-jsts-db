@@ -39,7 +39,6 @@
     // "noEmit": true,
     "noEmit": false,
     "target": "esnext",
-    // "outDir": "debugmap",
     "outDir": "./dist",
   },
   "exclude": [
