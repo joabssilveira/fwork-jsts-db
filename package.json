@@ -7,7 +7,7 @@
 		"@types/sequelize": "^4.28.20",
 		"@types/tedious": "^4.0.10",
 		"dotenv": "^16.0.3",
-		"fwork-jsts-common": "^2.0.2",
+		"fwork-jsts-common": "^2.0.3",
 		"mongoose": "^6.8.1",
 		"mysql2": "^3.1.2",
 		"pg": "^8.13.1",
@@ -17,17 +17,8 @@
 		"uuidv7": "^1.0.2"
 	},
 	"devDependencies": {
-		"@size-limit/preset-small-lib": "^9.0.0",
-		"copy-webpack-plugin": "^11.0.0",
-		"husky": "^8.0.3",
-		"size-limit": "^9.0.0",
 		"standard-version": "^9.5.0",
-		"ts-loader": "^9.4.1",
-		"tsdx": "^0.14.1",
-		"tslib": "^2.6.2",
-		"typescript": "^5.6.3",
-		"webpack": "^5.75.0",
-		"webpack-cli": "^4.10.0"
+		"typescript": "^5.6.3"
 	},
 	"engines": {
 		"node": ">=10"
@@ -37,11 +28,6 @@
 		"src"
 	],
 	"homepage": "https://github.com/joabssilveira/fwork-jsts-db",
-	"husky": {
-		"hooks": {
-			"pre-commit": "tsdx lint"
-		}
-	},
 	"keywords": [
 		"database",
 		"db",
@@ -52,7 +38,6 @@
 	],
 	"license": "MIT",
 	"main": "dist/index.js",
-	"module": "dist/fwork-jsts-db.esm.js",
 	"name": "fwork-jsts-db",
 	"prettier": {
 		"printWidth": 80,
@@ -61,21 +46,11 @@
 		"trailingComma": "es5"
 	},
 	"scripts": {
-		"build": "npx webpack --config webpack.config.js --mode development",
+		"build": "tsc --project tsconfig.json",
 		"release:major": "standard-version -M && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version major && git push origin && git push origin --tags && npm publish --access public",
 		"release:minor": "standard-version -m && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version minor && git push origin && git push origin --tags && npm publish --access public",
 		"release:patch": "standard-version -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin && git push origin --tags && npm publish --access public"
 	},
-	"size-limit": [
-		{
-			"path": "dist/fwork-jsts-db.cjs.production.min.js",
-			"limit": "10 KB"
-		},
-		{
-			"path": "dist/fwork-jsts-db.esm.js",
-			"limit": "10 KB"
-		}
-	],
-	"typings": "dist/index.d.ts",
+	"types": "dist/index.d.ts",
 	"version": "2.0.2"
 }
