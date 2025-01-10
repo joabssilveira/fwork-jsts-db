@@ -59,7 +59,6 @@ export class DataSourceUtils {
     let startBraceCount = 0
     let firstStartBraceIdx
     let endBraceCount = 0
-    // let lastEndBranceIdx
     let lastItem: string | undefined
     for (let i = 0; i < tmpStr.length; i++) {
       const letter = tmpStr[i]
@@ -76,15 +75,12 @@ export class DataSourceUtils {
             }).map(i => (lastItem ? lastItem + '.' : '') + i)
 
             result.push(...a)
-            // console.log(`item from array: ${a}`)
           }
           else {
             if (!CommonUtils.isNullOrEmpty(item)) {
               result.push(item)
               lastItem = item
             }
-
-            // console.log(`item from last comma: ${lastItem}`)
           }
         }
 
@@ -99,25 +95,16 @@ export class DataSourceUtils {
             result.push(item)
             lastItem = item
           }
-
-          // console.log(`item from open brace: ${lastItem}`)
         }
         startBraceCount++
       }
       else if (letter == '}') {
         endBraceCount++
         if (endBraceCount == startBraceCount) {
-          // lastEndBranceIdx = i
-          // console.log(lastEndBranceIdx)
-          // const item = tmpStr.substring((firstStartBraceIdx || 0), lastEndBranceIdx + 1)
-
           lastComma = (firstStartBraceIdx || 0) - 1
           firstStartBraceIdx = null
           startBraceCount = 0
-          // lastEndBranceIdx = null
           endBraceCount = 0
-
-          // console.log(`item from close brace (not in array): ${item}`)
         }
       }
 
@@ -133,15 +120,12 @@ export class DataSourceUtils {
           }).map(i => (lastItem ? lastItem + '.' : '') + i)
 
           result.push(...a)
-          // console.log(`item from array: ${a}`)
         }
         else {
           if (!CommonUtils.isNullOrEmpty(item)) {
             result.push(item)
             lastItem = item
           }
-
-          // console.log(`last item: ${item}`)
         }
       }
     }
@@ -176,13 +160,7 @@ export class DataSourceUtils {
   }
 }
 
-// SEARCH OPTIONS
-
-// export const whereLogicalOperators = ['$and', '$nand', '$or', '$xor', '$not']
-// export const whereComparisonOperators = ['$gt', '$ge', '$lt', '$le', '$eq', '$ne', '$in', '$nin']
-
 export {
-
   DbConnectionMongoose, DbConnectionSequelize, DbRelationType, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne, IDbBulkCreateOptions, IDbClientDataSource, IDbConnection, IDbCreateOptions,
   IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions, IDbGetResult, IDbRelation, IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne,
   IDbTransaction, IDbUpdateOptions, IMongooseDeleteOptions, IMongooseGetOptions, IRedisDataSource, IRedisDeleteOptions, IRedisGetOptions, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeCrudOptions, ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions,
