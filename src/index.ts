@@ -7,6 +7,7 @@ import {
 import { DbConnectionMongoose, IMongooseDeleteOptions, IMongooseGetOptions, MongooseDataSource, MongooseUtils } from './mongoose'
 import { IRedisDataSource, IRedisDeleteOptions, IRedisGetOptions, RedisConnection, RedisDataSource, RedisSearchDocumentResult, RedisSearchResult, RedisWhere } from './redis'
 import {
+  CascadeOptions, ISequelizeSettings, SequelizeEnv, SequelizeGetIncludeWhereResult, SequelizeIncludeResult, SequelizeIndexOptionField, 
   DbConnectionSequelize, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeCrudOptions, ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions,
   ISequelizeGetOptions, ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne, ISequelizeUpdateOptions, SequelizeDataSource, SequelizeTransaction, SequelizeUtils,
 } from './sequelize'
@@ -161,8 +162,21 @@ export class DataSourceUtils {
 }
 
 export {
-  DbConnectionMongoose, DbConnectionSequelize, DbRelationType, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne, IDbBulkCreateOptions, IDbClientDataSource, IDbConnection, IDbCreateOptions,
+  CommonUtils,
+
+  // DBCLIENT
+  DbRelationType, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne, IDbBulkCreateOptions, IDbClientDataSource, IDbConnection, IDbCreateOptions,
   IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions, IDbGetResult, IDbRelation, IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne,
-  IDbTransaction, IDbUpdateOptions, IMongooseDeleteOptions, IMongooseGetOptions, IRedisDataSource, IRedisDeleteOptions, IRedisGetOptions, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeCrudOptions, ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions,
-  ISequelizeGetOptions, ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne, ISequelizeUpdateOptions, MongooseDataSource, MongooseUtils, RedisConnection, RedisDataSource, RedisSearchDocumentResult, RedisSearchResult, RedisWhere, SequelizeDataSource, SequelizeTransaction, SequelizeUtils
+  IDbTransaction, IDbUpdateOptions,
+
+  // MONGOOSE
+  DbConnectionMongoose, IMongooseDeleteOptions, IMongooseGetOptions, MongooseDataSource, MongooseUtils,
+
+  // REDIS
+  IRedisDataSource, IRedisDeleteOptions, IRedisGetOptions, RedisConnection, RedisDataSource, RedisSearchDocumentResult, RedisSearchResult, RedisWhere,
+
+  // SEQUELIZE
+  CascadeOptions, ISequelizeSettings, SequelizeEnv, SequelizeGetIncludeWhereResult, SequelizeIncludeResult, SequelizeIndexOptionField, 
+  DbConnectionSequelize, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeCrudOptions, ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions,
+  ISequelizeGetOptions, ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne, ISequelizeUpdateOptions, SequelizeDataSource, SequelizeTransaction, SequelizeUtils,
 }
