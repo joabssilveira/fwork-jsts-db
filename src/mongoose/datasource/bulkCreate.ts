@@ -1,4 +1,4 @@
-import { StringUtils } from "fwork-jsts-common/src"
+import { StringUtils } from "fwork-jsts-common"
 import mongoose from "mongoose"
 import { uuidv7 } from "uuidv7"
 import { IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne } from "../../dbClient"

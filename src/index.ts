@@ -1,4 +1,4 @@
-import { CommonUtils } from "fwork-jsts-common/src"
+import { CommonUtils } from "fwork-jsts-common"
 import {
   DbRelationType, DbRelationTypeBelongsTo, DbRelationTypeHasMany, DbRelationTypeHasOne, IDbBulkCreateOptions, IDbClientDataSource, IDbConnection, IDbCreateOptions,
   IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions, IDbGetResult, IDbRelation, IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne,

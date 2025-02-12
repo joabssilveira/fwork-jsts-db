@@ -1,6 +1,6 @@
 import { SchemaFieldTypes } from "redis"
 import { RedisConnection, RedisDataSource, RedisWhere } from "."
-import { CommonUtils, ConsoleLogUtils } from "fwork-jsts-common/src"
+import { CommonUtils, ConsoleLogUtils } from "fwork-jsts-common"
 import { IRedisWhereOptions } from "./utils"
 
 // DECLARE YOUR MODEL INTERFACES OR CLASSES

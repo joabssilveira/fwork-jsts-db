@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import { Dialect } from 'sequelize'
-import { StringUtils } from 'fwork-jsts-common/src'
+import { StringUtils } from 'fwork-jsts-common'
 dotenv.config()
 
 export interface ISequelizeSettings {

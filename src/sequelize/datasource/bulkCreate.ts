@@ -1,4 +1,4 @@
-import { StringUtils } from 'fwork-jsts-common/src'
+import { StringUtils } from 'fwork-jsts-common'
 import { ModelDefined } from 'sequelize/types'
 import { MakeNullishOptional } from 'sequelize/types/utils'
 import { uuidv7 } from 'uuidv7'
