@@ -15,7 +15,11 @@ export const mongooseExecCreate = async <T>(options: IMongooseCreateOptions<T>, 
   hasMany?: IDbRelationHasMany<any, any>[] | undefined,
   hasOne?: IDbRelationHasOne<any, any>[] | undefined,
   onBeforeCreate?: ((options: IMongooseCreateOptions<T>) => IMongooseCreateOptions<T> | Promise<IMongooseCreateOptions<T>>) | undefined
-  onAfterCreate?: (options: IMongooseCreateOptions<T>, created?: T | undefined) => void | Promise<void>
+  onAfterCreate?: (options: IMongooseCreateOptions<T>, created?: T | undefined) => void | Promise<void>,
+
+  overrideMasterOptions?: (options: IMongooseCreateOptions<any>) => IMongooseCreateOptions<any>,
+  overrideChildrenOptions?: (options: IMongooseCreateOptions<any>) => IMongooseCreateOptions<any>,
+  overrideChildOptions?: (options: IMongooseCreateOptions<any>) => IMongooseCreateOptions<any>,
 }): Promise<T | undefined> => {
   if (optionsExt.onBeforeCreate)
     options = await optionsExt.onBeforeCreate(options)
@@ -27,7 +31,7 @@ export const mongooseExecCreate = async <T>(options: IMongooseCreateOptions<T>, 
       if (master) {
         (options.data as any)[relation.foreignKey] = master[relation.masterKey]
         await relation.dataSourceBuilder().create({
-          ...options,
+          ...(optionsExt.overrideMasterOptions ? optionsExt.overrideMasterOptions(options) : options),
           data: master
         })
       }
@@ -50,7 +54,7 @@ export const mongooseExecCreate = async <T>(options: IMongooseCreateOptions<T>, 
       if (children?.length) {
         children.forEach(c => c[relation.foreignKey] = (options.data as any)[relation.masterKey])
         await relation.dataSourceBuilder().bulkCreate({
-          ...options,
+          ...(optionsExt.overrideChildrenOptions ? optionsExt.overrideChildrenOptions(options) : options),
           data: children
         })
       }
@@ -63,7 +67,7 @@ export const mongooseExecCreate = async <T>(options: IMongooseCreateOptions<T>, 
       if (child) {
         child[relation.foreignKey] = (options.data as any)[relation.masterKey]
         await relation.dataSourceBuilder().create({
-          ...options,
+          ...(optionsExt.overrideChildOptions ? optionsExt.overrideChildOptions(options) : options),
           data: child
         })
       }

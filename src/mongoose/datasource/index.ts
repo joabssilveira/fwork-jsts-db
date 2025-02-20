@@ -78,6 +78,26 @@ export abstract class MongooseDataSource<T> implements IDbClientDataSource<
 
   }
 
+  overrideCreateMasterOptions(options: IMongooseCreateOptions<any>) {
+    return options
+  }
+  overrideCreateChildrenOptions(options: IMongooseCreateOptions<any>) {
+    return options
+  }
+  overrideCreateChildOptions(options: IMongooseCreateOptions<any>) {
+    return options
+  }
+
+  overrideBulkCreateMasterOptions(options: IMongooseBulkCreateOptions<any>) {
+    return options
+  }
+  overrideBulkCreateChildrenOptions(options: IMongooseBulkCreateOptions<any>) {
+    return options
+  }
+  overrideBulkCreateChildOptions(options: IMongooseBulkCreateOptions<any>) {
+    return options
+  }
+
   bulkCreate(options: IMongooseBulkCreateOptions<T>): Promise<T[] | undefined> {
     return mongooseExecBulkCreate(options, {
       collectionModel: this.collectionModel,
@@ -88,6 +108,10 @@ export abstract class MongooseDataSource<T> implements IDbClientDataSource<
       hasOne: this.hasOne,
       onBeforeBulkCreate: this.onBeforeBulkCreate,
       onAfterBulkCreate: this.onAfterBulkCreate,
+
+      overrideMasterOptions: this.overrideBulkCreateMasterOptions,
+      overrideChildrenOptions: this.overrideBulkCreateChildrenOptions,
+      overrideChildOptions: this.overrideBulkCreateChildOptions,
     })
   }
 
@@ -101,6 +125,10 @@ export abstract class MongooseDataSource<T> implements IDbClientDataSource<
       hasOne: this.hasOne,
       onBeforeCreate: this.onBeforeCreate,
       onAfterCreate: this.onAfterCreate,
+
+      overrideMasterOptions: this.overrideCreateMasterOptions,
+      overrideChildrenOptions: this.overrideCreateChildrenOptions,
+      overrideChildOptions: this.overrideCreateChildOptions,
     })
   }
 

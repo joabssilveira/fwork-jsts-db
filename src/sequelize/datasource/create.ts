@@ -15,6 +15,10 @@ export const sequelizeExecCreate = async <T extends {}>(options: ISequelizeCreat
   hasOne?: ISequelizeRelationHasOne<any, any>[] | undefined,
   onBeforeCreate?: ((options: ISequelizeCreateOptions<T>) => ISequelizeCreateOptions<T> | Promise<ISequelizeCreateOptions<T>>) | undefined,
   onAfterCreate?: ((options: ISequelizeCreateOptions<T>, created?: T | undefined) => void | Promise<void>) | undefined,
+
+  overrideMasterOptions?: (options: ISequelizeCreateOptions<any>) => ISequelizeCreateOptions<any>,
+  overrideChildrenOptions?: (options: ISequelizeCreateOptions<any>) => ISequelizeCreateOptions<any>,
+  overrideChildOptions?: (options: ISequelizeCreateOptions<any>) => ISequelizeCreateOptions<any>,
 }): Promise<T | undefined> => {
   if (optionsExt.onBeforeCreate)
     options = await optionsExt.onBeforeCreate(options)
@@ -26,7 +30,7 @@ export const sequelizeExecCreate = async <T extends {}>(options: ISequelizeCreat
       if (master) {
         (options.data as any)[relation.foreignKey] = master[relation.masterKey]
         await relation.dataSourceBuilder().create({
-          ...options,
+          ...(optionsExt.overrideMasterOptions ? optionsExt.overrideMasterOptions(options) : options),
           data: master
         })
       }
@@ -47,8 +51,8 @@ export const sequelizeExecCreate = async <T extends {}>(options: ISequelizeCreat
       if (children?.length) {
         children.forEach(c => c[relation.foreignKey] = (options.data as any)[relation.masterKey])
         await relation.dataSourceBuilder().bulkCreate({
-          ...options,
-          data: children
+          ...(optionsExt.overrideChildrenOptions ? optionsExt.overrideChildrenOptions(options) : options),
+          data: children,
         })
       }
     }
@@ -60,7 +64,7 @@ export const sequelizeExecCreate = async <T extends {}>(options: ISequelizeCreat
       if (child) {
         child[relation.foreignKey] = (options.data as any)[relation.masterKey]
         await relation.dataSourceBuilder().create({
-          ...options,
+          ...(optionsExt.overrideChildOptions ? optionsExt.overrideChildOptions(options) : options),
           data: child
         })
       }

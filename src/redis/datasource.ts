@@ -76,6 +76,26 @@ export class RedisDataSource<T, TWhereOptions> implements IRedisDataSource<T, TW
 
   }
 
+  overrideCreateMasterOptions(options: IDbCreateOptions<any>) {
+    return options
+  }
+  overrideCreateChildrenOptions(options: IDbCreateOptions<any>) {
+    return options
+  }
+  overrideCreateChildOptions(options: IDbCreateOptions<any>) {
+    return options
+  }
+
+  overrideBulkCreateMasterOptions(options: IDbBulkCreateOptions<any>) {
+    return options
+  }
+  overrideBulkCreateChildrenOptions(options: IDbBulkCreateOptions<any>) {
+    return options
+  }
+  overrideBulkCreateChildOptions(options: IDbBulkCreateOptions<any>) {
+    return options
+  }
+
   private pingText = 'PONG'
 
   private checkConn = async () => {

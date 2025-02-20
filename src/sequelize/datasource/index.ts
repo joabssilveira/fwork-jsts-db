@@ -49,7 +49,6 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
 
   onBeforeBulkCreate(options: ISequelizeBulkCreateOptions<T>): ISequelizeBulkCreateOptions<T> | Promise<ISequelizeBulkCreateOptions<T>> {
     return options
-
   }
   onAfterBulkCreate(_options: ISequelizeBulkCreateOptions<T>, _createdList?: T[] | undefined): void | Promise<void> {
 
@@ -79,6 +78,26 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
 
   }
 
+  overrideCreateMasterOptions(options: ISequelizeCreateOptions<any>) {
+    return options
+  }
+  overrideCreateChildrenOptions(options: ISequelizeCreateOptions<any>) {
+    return options
+  }
+  overrideCreateChildOptions(options: ISequelizeCreateOptions<any>) {
+    return options
+  }
+
+  overrideBulkCreateMasterOptions(options: ISequelizeBulkCreateOptions<any>) {
+    return options
+  }
+  overrideBulkCreateChildrenOptions(options: ISequelizeBulkCreateOptions<any>) {
+    return options
+  }
+  overrideBulkCreateChildOptions(options: ISequelizeBulkCreateOptions<any>) {
+    return options
+  }
+
   async bulkCreate(options: ISequelizeBulkCreateOptions<T>): Promise<T[] | undefined> {
     return sequelizeExecBulkCreate(options, {
       collectionModel: this.collectionModel,
@@ -89,6 +108,10 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
       hasOne: this.hasOne,
       onBeforeBulkCreate: this.onBeforeBulkCreate,
       onAfterBulkCreate: this.onAfterBulkCreate,
+
+      overrideMasterOptions: this.overrideBulkCreateMasterOptions,
+      overrideChildrenOptions: this.overrideBulkCreateChildrenOptions,
+      overrideChildOptions: this.overrideBulkCreateChildOptions,
     })
   }
 
@@ -102,6 +125,10 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
       hasOne: this.hasOne,
       onBeforeCreate: this.onBeforeCreate,
       onAfterCreate: this.onAfterCreate,
+
+      overrideMasterOptions: this.overrideCreateMasterOptions,
+      overrideChildrenOptions: this.overrideCreateChildrenOptions,
+      overrideChildOptions: this.overrideCreateChildOptions,
     })
   }
 

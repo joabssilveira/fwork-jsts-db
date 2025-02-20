@@ -15,6 +15,10 @@ export const sequelizeExecBulkCreate = async <T extends {}>(options: ISequelizeB
   hasOne?: ISequelizeRelationHasOne<any, any>[] | undefined,
   onBeforeBulkCreate?: ((options: ISequelizeBulkCreateOptions<T>) => ISequelizeBulkCreateOptions<T> | Promise<ISequelizeBulkCreateOptions<T>>) | undefined,
   onAfterBulkCreate?: ((options: ISequelizeBulkCreateOptions<T>, createdList?: T[] | undefined) => void | Promise<void>) | undefined,
+
+  overrideMasterOptions?: (options: ISequelizeBulkCreateOptions<any>) => ISequelizeBulkCreateOptions<any>,
+  overrideChildrenOptions?: (options: ISequelizeBulkCreateOptions<any>) => ISequelizeBulkCreateOptions<any>,
+  overrideChildOptions?: (options: ISequelizeBulkCreateOptions<any>) => ISequelizeBulkCreateOptions<any>,
 }): Promise<T[] | undefined> => {
   if (!options.data.length) return
 
@@ -39,7 +43,7 @@ export const sequelizeExecBulkCreate = async <T extends {}>(options: ISequelizeB
       }
 
       await relation.dataSourceBuilder().bulkCreate({
-        ...options,
+        ...(optionsExt.overrideMasterOptions ? optionsExt.overrideMasterOptions(options) : options),
         data: masters
       })
     }
@@ -64,7 +68,7 @@ export const sequelizeExecBulkCreate = async <T extends {}>(options: ISequelizeB
       }
 
       await relation.dataSourceBuilder().bulkCreate({
-        ...options,
+        ...(optionsExt.overrideChildrenOptions ? optionsExt.overrideChildrenOptions(options) : options),
         data: children
       })
     }
@@ -84,7 +88,7 @@ export const sequelizeExecBulkCreate = async <T extends {}>(options: ISequelizeB
       }
 
       await relation.dataSourceBuilder().bulkCreate({
-        ...options,
+        ...(optionsExt.overrideChildOptions ? optionsExt.overrideChildOptions(options) : options),
         data: children
       })
     }

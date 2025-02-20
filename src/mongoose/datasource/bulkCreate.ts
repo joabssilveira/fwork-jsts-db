@@ -13,7 +13,11 @@ export const mongooseExecBulkCreate = async <T>(options: IMongooseBulkCreateOpti
   hasMany?: IDbRelationHasMany<any, any>[] | undefined,
   hasOne?: IDbRelationHasOne<any, any>[] | undefined,
   onBeforeBulkCreate?: ((options: IMongooseBulkCreateOptions<T>) => IMongooseBulkCreateOptions<T> | Promise<IMongooseBulkCreateOptions<T>>) | undefined,
-  onAfterBulkCreate?: ((options: IMongooseBulkCreateOptions<T>, createdList?: T[] | undefined) => void | Promise<void>) | undefined
+  onAfterBulkCreate?: ((options: IMongooseBulkCreateOptions<T>, createdList?: T[] | undefined) => void | Promise<void>) | undefined,
+
+  overrideMasterOptions?: (options: IMongooseBulkCreateOptions<any>) => IMongooseBulkCreateOptions<any>,
+  overrideChildrenOptions?: (options: IMongooseBulkCreateOptions<any>) => IMongooseBulkCreateOptions<any>,
+  overrideChildOptions?: (options: IMongooseBulkCreateOptions<any>) => IMongooseBulkCreateOptions<any>,
 }): Promise<T[] | undefined> => {
   if (!options.data.length) return
 
@@ -38,7 +42,7 @@ export const mongooseExecBulkCreate = async <T>(options: IMongooseBulkCreateOpti
       }
 
       await relation.dataSourceBuilder().bulkCreate({
-        ...options,
+        ...(optionsExt.overrideMasterOptions ? optionsExt.overrideMasterOptions(options) : options),
         data: masters
       })
     }
@@ -62,7 +66,7 @@ export const mongooseExecBulkCreate = async <T>(options: IMongooseBulkCreateOpti
       }
 
       await relation.dataSourceBuilder().bulkCreate({
-        ...options,
+        ...(optionsExt.overrideChildrenOptions ? optionsExt.overrideChildrenOptions(options) : options),
         data: children
       })
     }
@@ -82,7 +86,7 @@ export const mongooseExecBulkCreate = async <T>(options: IMongooseBulkCreateOpti
       }
 
       await relation.dataSourceBuilder().bulkCreate({
-        ...options,
+        ...(optionsExt.overrideChildOptions ? optionsExt.overrideChildOptions(options) : options),
         data: children
       })
     }

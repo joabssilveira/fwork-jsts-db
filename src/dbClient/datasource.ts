@@ -31,4 +31,12 @@ export interface IDbClientDataSource<T, keyType,
   read(options?: getOptionsType): Promise<IDbGetResult<T[]> | undefined> | IDbGetResult<T[]> | undefined
   update(options: updateOptionsType): Promise<T | undefined> | T | undefined
   delete(options: deleteOptionsType | deleteByKeyOptionsType): Promise<number> | number
+
+  overrideCreateMasterOptions(options: createOptionsType): createOptionsType
+  overrideCreateChildrenOptions(options: createOptionsType): createOptionsType
+  overrideCreateChildOptions(options: createOptionsType): createOptionsType
+
+  overrideBulkCreateMasterOptions(options: bulkCreateOptionsType): bulkCreateOptionsType
+  overrideBulkCreateChildrenOptions(options: bulkCreateOptionsType): bulkCreateOptionsType
+  overrideBulkCreateChildOptions(options: bulkCreateOptionsType): bulkCreateOptionsType
 }
