@@ -30,10 +30,12 @@ export const mongooseExecCreate = async <T>(options: IMongooseCreateOptions<T>, 
       let master = (options.data as any)[relation.as]
       if (master) {
         (options.data as any)[relation.foreignKey] = master[relation.masterKey]
-        await relation.dataSourceBuilder().create({
+        const masterDbRes = await relation.dataSourceBuilder().create({
           ...(optionsExt.overrideMasterOptions ? optionsExt.overrideMasterOptions(options) : options),
           data: master
         })
+        if (!(options.data as any)[relation.foreignKey])
+          (options.data as any)[relation.foreignKey] = masterDbRes[relation.masterKey]
       }
     }
 
