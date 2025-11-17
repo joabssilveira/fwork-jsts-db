@@ -64,8 +64,8 @@ export class SequelizeUtils {
   // associations
 
   static createBelongsToAssociation<
-    SourceType extends object,
-    TargetType extends object
+    SourceType extends object, // child
+    TargetType extends object, // master
   >(
     sourceModel: ModelDefined<SourceType, any>,
     targetModel: ModelDefined<TargetType, any>,
@@ -83,8 +83,8 @@ export class SequelizeUtils {
   }
 
   static createHasManyAssociation<
-    SourceType extends object,
-    TargetType extends object
+    SourceType extends object, // master
+    TargetType extends object, // child
   >(
     sourceModel: ModelDefined<SourceType, any>,
     targetModel: ModelDefined<TargetType, any>,
@@ -170,10 +170,12 @@ export class SequelizeUtils {
               const regexValue = value[operator];
               if (typeof regexValue === 'string') {
                 // Aqui usamos Op.iRegexp para correspondência case-insensitive, caso necessário
-                (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = regexAsLike ? `%${regexValue}%` : regexValue;
+                // (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = regexAsLike ? `%${regexValue}%` : regexValue;
+                (whereOptions[key] as any)[regexAsLike ? Op.iLike : Op.regexp] = regexAsLike ? `%${regexValue}%` : regexValue;
               } else if (regexValue instanceof RegExp) {
                 // Se for uma instância de RegExp, também podemos usá-la diretamente
-                (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = regexAsLike ? `%${regexValue.source}%` : regexValue.source;
+                // (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = regexAsLike ? `%${regexValue.source}%` : regexValue.source;
+                (whereOptions[key] as any)[regexAsLike ? Op.iLike : Op.regexp] = regexAsLike ? `%${regexValue.source}%` : regexValue.source;
               }
             } else {
               // Tratamento normal dos outros operadores
