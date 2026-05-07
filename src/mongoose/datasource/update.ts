@@ -66,11 +66,12 @@ export const mongooseExecUpdate = async <T>(options: IMongooseUpdateOptions<T>, 
           }
         })
 
+        const masterKeyValue = relation.masterKey == '_id' ? new mongoose.Types.ObjectId((options.data as any)[relation.masterKey]) : (options.data as any)[relation.masterKey]
         // criar os que nao estao no banco e vieram nas opcoes
         const dbRes = await relation.dataSourceBuilder().read({
           ...options,
           where: {
-            [relation.foreignKey]: (options.data as any)[relation.masterKey],
+            [relation.foreignKey]: masterKeyValue,
           }
         })
 
@@ -104,10 +105,11 @@ export const mongooseExecUpdate = async <T>(options: IMongooseUpdateOptions<T>, 
       let child = (options.data as any)[relation.as]
       if (child && relation.updateCascadeOptions?.childKeyName) {
         // consulta pra checar se existe no banco
+        const masterKeyValue = relation.masterKey == '_id' ? new mongoose.Types.ObjectId((options.data as any)[relation.masterKey]) : (options.data as any)[relation.masterKey]
         const dbRes = await relation.dataSourceBuilder().read({
           ...options,
           where: {
-            [relation.foreignKey]: (options.data as any)[relation.masterKey],
+            [relation.foreignKey]: masterKeyValue,
           }
         })
 

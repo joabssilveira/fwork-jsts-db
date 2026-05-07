@@ -1,7 +1,8 @@
 import { SchemaFieldTypes } from "redis"
 import { RedisConnection, RedisDataSource, RedisWhere } from "."
-import { CommonUtils, ConsoleLogUtils } from "fwork-jsts-common"
+import { ConsoleLogUtils } from "fwork-jsts-common"
 import { IRedisWhereOptions } from "./utils"
+import { uuidv7 } from "uuidv7"
 
 // DECLARE YOUR MODEL INTERFACES OR CLASSES
 interface IMyInterface {
@@ -119,7 +120,7 @@ for (var key = 1; key <= 3; key++) {
   ds.create({
     data: {
       // myPrimaryKey: key.toString(),
-      myPrimaryKey: CommonUtils.getNewUuid(),
+      myPrimaryKey: uuidv7(),
       prop1: `value${key}`,
       prop2: key,
       propBoolean: false,
