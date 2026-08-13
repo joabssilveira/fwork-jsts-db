@@ -51,11 +51,10 @@
 		"trailingComma": "es5"
 	},
 	"scripts": {
-		"test": "",
 		"build": "tsc --project tsconfig.cjs.json && tsc --project tsconfig.esm.json",
 		"prepare": "husky",
 		"release": "standard-version",
-		"publish": "git push --follow-tags origin main && npm publish"
+		"pub": "npm run build && npm run release && git push --follow-tags origin main && npm publish"
 	},
 	"version": "2.0.15",
 	"exports": {

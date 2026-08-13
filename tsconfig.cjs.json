@@ -5,7 +5,14 @@
     "types"
   ],
   "compilerOptions": {
-    "module": "CommonJS",
+    // "module": "nodenext"
+    // O module determina qual sistema de módulos o TypeScript usará para gerenciar e emitir os arquivos. Por que NodeNext? 
+    // Ele reflete as regras reais do Node.js moderno. 
+    // O NodeNext é um "camaleão": ele entende tanto o formato CommonJS (require) quanto o ESM (import/export) dentro do mesmo projeto, 
+    // baseando-se no arquivo package.json ou nas extensões dos arquivos (.mts para ESM, .cts para CommonJS).Benefício: 
+    // Como precisamos atender aos dois mundos, usar o NodeNext nos força escrever um código TypeScript que respeita as regras de ambos os ecossistemas, 
+    // evitando problemas onde o código funciona no front-end mas quebra ao ser importado no back-end.
+    "module": "nodenext",
     // O que o parâmetro "lib" faz?
     // Ele define quais bibliotecas padrão do TypeScript devem ser incluídas no processo de compilação.
     // "DOM" adiciona tipos e APIs relacionadas ao navegador (ex.: document, window, etc.).
@@ -33,7 +40,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     // use Node's module resolution algorithm, instead of the legacy TS one
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     // transpile JSX to React.createElement
     "jsx": "react",
     // interop between ESM and CJS modules. Recommended by TS
@@ -43,11 +50,11 @@
     // error out if import and file system have a casing mismatch. Recommended by TS
     "forceConsistentCasingInFileNames": true,
     // `tsdx build` ignores this option, but it is commonly used when type-checking separately with `tsc`
-    // "noEmit": true,
     "noEmit": false,
 
     "outDir": "./dist/cjs",
     "declarationDir": "./dist/types",
-    "target": "es2021",
+    "target": "es2022",
+    "diagnostics": true,
   }
 }
