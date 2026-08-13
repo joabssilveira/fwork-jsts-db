@@ -1,4 +1,4 @@
-import { ModelDefined, WhereOptions } from 'sequelize/types'
+import { ModelDefined, WhereOptions } from 'sequelize'
 import { ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions, ISequelizeGetOptions } from '../crudOptions'
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from '../relations'
 import { SequelizeTransaction } from '../transaction'

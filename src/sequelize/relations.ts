@@ -1,4 +1,4 @@
-import { ModelDefined } from 'sequelize/types'
+import { ModelDefined } from 'sequelize'
 import { IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne } from '../dbClient/relation'
 import { SequelizeDataSource } from './datasource'
 

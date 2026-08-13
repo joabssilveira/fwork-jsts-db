@@ -1,4 +1,4 @@
-import { ModelDefined } from 'sequelize/types'
+import { ModelDefined } from 'sequelize'
 import { IDbClientDataSource } from '../../dbClient/datasource'
 import { IDbGetResult } from '../../dbClient/results'
 import { ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions, ISequelizeGetOptions, ISequelizeUpdateOptions } from '../crudOptions'

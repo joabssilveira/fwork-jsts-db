@@ -1,10 +1,10 @@
 import { StringUtils } from 'fwork-jsts-common'
-import { ModelDefined } from 'sequelize/types'
 import { MakeNullishOptional } from 'sequelize/types/utils'
 import { uuidv7 } from 'uuidv7'
 import { ISequelizeBulkCreateOptions } from '../crudOptions'
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from '../relations'
 import { SequelizeTransaction } from '../transaction'
+import { ModelDefined } from 'sequelize'
 
 export const sequelizeExecBulkCreate = async <T extends {}>(options: ISequelizeBulkCreateOptions<T>, optionsExt: {
   collectionModel: ModelDefined<T, T>,

@@ -1,4 +1,4 @@
-import { FindAttributeOptions, ModelDefined } from 'sequelize/types'
+import { FindAttributeOptions, ModelDefined } from 'sequelize'
 import { IDbGetResult } from '../../dbClient/results'
 import { ISequelizeGetOptions } from '../crudOptions'
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from '../relations'
