@@ -17,6 +17,9 @@
 		"uuidv7": "^1.0.2"
 	},
 	"devDependencies": {
+		"@commitlint/cli": "^21.2.2",
+		"@commitlint/config-conventional": "^21.2.2",
+		"husky": "^9.1.7",
 		"standard-version": "^9.5.0",
 		"typescript": "^5.6.3"
 	},
@@ -48,12 +51,13 @@
 		"trailingComma": "es5"
 	},
 	"scripts": {
+		"test": "",
 		"build": "tsc --project tsconfig.cjs.json && tsc --project tsconfig.esm.json",
-		"release:major": "standard-version -M && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version major && git push origin && git push origin --tags && npm publish --access public",
-		"release:minor": "standard-version -m && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version minor && git push origin && git push origin --tags && npm publish --access public",
-		"release:patch": "standard-version -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin && git push origin --tags && npm publish --access public"
+		"prepare": "husky",
+		"release": "standard-version",
+		"publish": "git push --follow-tags origin main && npm publish"
 	},
-	"version": "2.0.13",
+	"version": "2.0.15",
 	"exports": {
 		".": {
 			"types": "./dist/types/index.d.ts",
