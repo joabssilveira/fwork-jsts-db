@@ -48,7 +48,6 @@ export abstract class MongooseDataSource<T> implements IDbClientDataSource<
 
   onBeforeBulkCreate(options: IMongooseBulkCreateOptions<T>): IMongooseBulkCreateOptions<T> | Promise<IMongooseBulkCreateOptions<T>> {
     return options
-
   }
   onAfterBulkCreate(_options: IMongooseBulkCreateOptions<T>, _createdList?: T[] | undefined): void | Promise<void> {
 
@@ -106,12 +105,12 @@ export abstract class MongooseDataSource<T> implements IDbClientDataSource<
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
-      onBeforeBulkCreate: this.onBeforeBulkCreate,
-      onAfterBulkCreate: this.onAfterBulkCreate,
+      onBeforeBulkCreate: this.onBeforeBulkCreate.bind(this),
+      onAfterBulkCreate: this.onAfterBulkCreate.bind(this),
 
-      overrideMasterOptions: this.overrideBulkCreateMasterOptions,
-      overrideChildrenOptions: this.overrideBulkCreateChildrenOptions,
-      overrideChildOptions: this.overrideBulkCreateChildOptions,
+      overrideMasterOptions: this.overrideBulkCreateMasterOptions.bind(this),
+      overrideChildrenOptions: this.overrideBulkCreateChildrenOptions.bind(this),
+      overrideChildOptions: this.overrideBulkCreateChildOptions.bind(this),
     })
   }
 
@@ -123,12 +122,12 @@ export abstract class MongooseDataSource<T> implements IDbClientDataSource<
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
-      onBeforeCreate: this.onBeforeCreate,
-      onAfterCreate: this.onAfterCreate,
+      onBeforeCreate: this.onBeforeCreate.bind(this),
+      onAfterCreate: this.onAfterCreate.bind(this),
 
-      overrideMasterOptions: this.overrideCreateMasterOptions,
-      overrideChildrenOptions: this.overrideCreateChildrenOptions,
-      overrideChildOptions: this.overrideCreateChildOptions,
+      overrideMasterOptions: this.overrideCreateMasterOptions.bind(this),
+      overrideChildrenOptions: this.overrideCreateChildrenOptions.bind(this),
+      overrideChildOptions: this.overrideCreateChildOptions.bind(this),
     })
   }
 
@@ -140,8 +139,8 @@ export abstract class MongooseDataSource<T> implements IDbClientDataSource<
         belongsTo: this.belongsTo,
         hasMany: this.hasMany,
         hasOne: this.hasOne,
-        onBeforeRead: this.onBeforeRead,
-        onAfterRead: this.onAfterRead,
+        onBeforeRead: this.onBeforeRead.bind(this),
+        onAfterRead: this.onAfterRead.bind(this),
       }
     })
   }
@@ -154,8 +153,8 @@ export abstract class MongooseDataSource<T> implements IDbClientDataSource<
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
-      onBeforeUpdate: this.onBeforeUpdate,
-      onAfterUpdate: this.onAfterUpdate,
+      onBeforeUpdate: this.onBeforeUpdate.bind(this),
+      onAfterUpdate: this.onAfterUpdate.bind(this),
     })
   }
 
@@ -168,10 +167,10 @@ export abstract class MongooseDataSource<T> implements IDbClientDataSource<
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
-      onBeforeDelete: this.onBeforeDelete,
-      onAfterDelete: this.onAfterDelete,
-      onBeforeRead: this.onBeforeRead,
-      onAfterRead: this.onAfterRead,
+      onBeforeDelete: this.onBeforeDelete.bind(this),
+      onAfterDelete: this.onAfterDelete.bind(this),
+      onBeforeRead: this.onBeforeRead.bind(this),
+      onAfterRead: this.onAfterRead.bind(this),
     })
   }
 

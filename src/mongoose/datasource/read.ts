@@ -17,6 +17,9 @@ export const mongooseExecRead = async <T>(args: {
     onAfterRead?: ((options?: IMongooseGetOptions<T> | undefined, result?: IDbGetResult<T[]> | undefined) => void | Promise<void>) | undefined
   }
 }): Promise<IDbGetResult<T[]> | undefined> => {
+  // TODO-analisar essa funcao
+  // https://chatgpt.com/share/6a8fa396-3690-83e9-bd66-1141ca51e29d
+  // 4ª iteracao
   let { options, optionsExt } = args
 
   options = MongooseUtils.getOptionsRightTypeValues(options)
@@ -60,7 +63,7 @@ export const mongooseExecRead = async <T>(args: {
     // .collation({ locale: 'pt', strength: 2 }) //strength 2 for case-insensitive (low performance on complex aggregate) nos testes o case-insensitive funcionou sem isso
 
   const readedCount = skip || options?.limit ?
-    await (await optionsExt.collectionModel.count($match)) : readed?.length
+    await (await optionsExt.collectionModel.countDocuments($match)) : readed?.length
 
   const result: IDbGetResult<T[]> = {
     payload: readed,

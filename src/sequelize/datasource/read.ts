@@ -4,11 +4,12 @@ import { ISequelizeGetOptions } from '../crudOptions'
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from '../relations'
 import { SequelizeTransaction } from '../transaction'
 import { SequelizeIncludeResult, SequelizeUtils } from '../utils'
+import { WithoutSequelizeTimestamps } from '../types'
 
 export const sequelizeExecRead = async <T extends {}>(args: {
   options?: ISequelizeGetOptions<T> | undefined,
   optionsExt: {
-    collectionModel: ModelDefined<T, T>,
+    collectionModel: ModelDefined<T, T | WithoutSequelizeTimestamps<T>>,
     transaction?: SequelizeTransaction | undefined,
     belongsTo?: ISequelizeRelationBelongsTo<any, any>[] | undefined
     hasMany?: ISequelizeRelationHasMany<any, any>[] | undefined

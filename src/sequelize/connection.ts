@@ -1,16 +1,20 @@
-import { Sequelize } from 'sequelize'
-import { ISequelizeSettings, SequelizeEnv } from './env'
-import { SequelizeTransaction } from './transaction'
-import * as tedious from 'tedious'
 import * as mysql2 from 'mysql2'
 import * as pg from 'pg'
+import { ModelDefined, Sequelize } from 'sequelize'
+import * as tedious from 'tedious'
 import { IDbConnection } from '../dbClient/connection'
+import { ISequelizeSettings, SequelizeEnv } from './env'
+import { SequelizeTransaction } from './transaction'
+
+export type DbConnectionSequelizeOnBeforeSyncResult = {
+  includeModelsOnly?: ModelDefined<any, any>[]
+}
 
 export class DbConnectionSequelize implements IDbConnection {
   sequelize: Sequelize | undefined
   env: ISequelizeSettings | undefined
 
-  onBeforeSync?: () => Promise<void | undefined> | void | undefined
+  onBeforeSync?: () => Promise<DbConnectionSequelizeOnBeforeSyncResult | undefined> | DbConnectionSequelizeOnBeforeSyncResult | undefined
   onAfterSync?: () => Promise<void | undefined> | void | undefined
   onBeforeOpen?: () => Promise<void | undefined> | void | undefined
   onAfterOpen?: () => Promise<void | undefined> | void | undefined
@@ -61,15 +65,20 @@ export class DbConnectionSequelize implements IDbConnection {
 
     if (this.env?.sync) {
       try {
-        if (this.onBeforeSync)
-          await this.onBeforeSync()
-        await this.sequelize.sync({
-          logging: this.env.logging,
-          force: this.env.force,
-          alter: this.env.alter
-        })
-        if (this.onAfterSync)
-          await this.onAfterSync()
+        const options = await this.onBeforeSync?.()
+
+        if (!options?.includeModelsOnly?.length) {
+          await this.sequelize.sync({
+            logging: this.env.logging,
+            force: this.env.force,
+            alter: this.env.alter
+          })
+        }
+        else for (let model of options.includeModelsOnly) {
+          model.sync({ alter: this.env.alter, logging: this.env.logging, force: this.env.force })
+        }
+
+        await this.onAfterSync?.()
       } catch (error) {
         console.log('ERROR -> DbConnectionSequelize.open() this.sequelize.sync()')
         console.log(error)

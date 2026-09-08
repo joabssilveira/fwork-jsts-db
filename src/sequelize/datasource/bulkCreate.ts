@@ -5,9 +5,10 @@ import { ISequelizeBulkCreateOptions } from '../crudOptions'
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from '../relations'
 import { SequelizeTransaction } from '../transaction'
 import { ModelDefined } from 'sequelize'
+import { WithoutSequelizeTimestamps } from '../types'
 
 export const sequelizeExecBulkCreate = async <T extends {}>(options: ISequelizeBulkCreateOptions<T>, optionsExt: {
-  collectionModel: ModelDefined<T, T>,
+  collectionModel: ModelDefined<T, T | WithoutSequelizeTimestamps<T>>,
   keyName: keyof T,
   transaction?: SequelizeTransaction | undefined,
   belongsTo?: ISequelizeRelationBelongsTo<any, any>[] | undefined,

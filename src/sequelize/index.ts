@@ -1,4 +1,4 @@
-import { DbConnectionSequelize } from './connection'
+import { DbConnectionSequelize, DbConnectionSequelizeOnBeforeSyncResult, } from './connection'
 import {
   ISequelizeCrudOptions, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeGetOptions,
   ISequelizeUpdateOptions, ISequelizeDeleteOptions, ISequelizeDeleteByKeyOptions,
@@ -8,10 +8,11 @@ import { SequelizeDataSource, } from './datasource'
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne, } from './relations'
 import { SequelizeTransaction, } from './transaction'
 import { SequelizeUtils, CascadeOptions, SequelizeGetIncludeWhereResult, SequelizeIncludeResult, SequelizeIndexOptionField, } from './utils'
+import { SequelizeTimestampAttributes, WithoutSequelizeTimestamps, } from './types'
 
 export {
   // CONNECTION
-  DbConnectionSequelize,
+  DbConnectionSequelize, DbConnectionSequelizeOnBeforeSyncResult,
   // CRUD OPTIONS
   ISequelizeCrudOptions, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeGetOptions,
   ISequelizeUpdateOptions, ISequelizeDeleteOptions, ISequelizeDeleteByKeyOptions,
@@ -23,6 +24,8 @@ export {
   ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne,
   // TRANSACTIONS
   SequelizeTransaction,
+  // TYPES
+  SequelizeTimestampAttributes, WithoutSequelizeTimestamps,
   // UTILS
   SequelizeUtils, CascadeOptions, SequelizeGetIncludeWhereResult, SequelizeIncludeResult, SequelizeIndexOptionField,
 }

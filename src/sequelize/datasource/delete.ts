@@ -4,9 +4,10 @@ import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelat
 import { SequelizeTransaction } from '../transaction'
 import { sequelizeExecRead } from './read'
 import { IDbGetResult } from '../../dbClient'
+import { WithoutSequelizeTimestamps } from '../types'
 
 export const sequelizeExecDelete = async <T extends {}>(options: ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>, optionsExt: {
-  collectionModel: ModelDefined<T, T>,
+  collectionModel: ModelDefined<T, T | WithoutSequelizeTimestamps<T>>,
   keyName: keyof T,
   transaction?: SequelizeTransaction | undefined,
   belongsTo?: ISequelizeRelationBelongsTo<any, any>[] | undefined

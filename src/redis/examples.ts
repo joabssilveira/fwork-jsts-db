@@ -1,4 +1,4 @@
-import { SchemaFieldTypes } from "redis"
+import { SCHEMA_FIELD_TYPE } from "redis"
 import { RedisConnection, RedisDataSource, RedisWhere } from "."
 import { ConsoleLogUtils } from "fwork-jsts-common"
 import { IRedisWhereOptions } from "./utils"
@@ -45,34 +45,34 @@ export class MyRedisConnection extends RedisConnection {
       await this.client?.ft.create(`idx:${this.myCollectionPrefix}`, {
         '$.myPrimaryKey': {
           // TO STRING FIELDS, USE TAG
-          type: SchemaFieldTypes.TAG,
+          type: SCHEMA_FIELD_TYPE.TAG,
           SORTABLE: true,
           AS: 'myPrimaryKey'
         },
         '$.prop1': {
-          type: SchemaFieldTypes.TAG,
+          type: SCHEMA_FIELD_TYPE.TAG,
           SORTABLE: true,
           AS: 'prop1'
         },
         '$.prop2': {
-          type: SchemaFieldTypes.NUMERIC,
+          type: SCHEMA_FIELD_TYPE.NUMERIC,
           SORTABLE: true,
           AS: 'prop2'
         },
         '$.propBoolean': {
-          type: SchemaFieldTypes.NUMERIC,
+          type: SCHEMA_FIELD_TYPE.NUMERIC,
           SORTABLE: true,
           AS: 'propBoolean'
         },
         // THIS IS A CHILD PROP
         '$.child.prop1': {
-          type: SchemaFieldTypes.TAG,
+          type: SCHEMA_FIELD_TYPE.TAG,
           SORTABLE: true,
           AS: 'childProp1'
         },
         // THIS IS A CHILDREN ARRAY PROP
         '$.children[*].prop1': {
-          type: SchemaFieldTypes.TAG,
+          type: SCHEMA_FIELD_TYPE.TAG,
           SORTABLE: true,
           AS: 'childrenProp1'
         },

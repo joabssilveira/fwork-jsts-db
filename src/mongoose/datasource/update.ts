@@ -1,4 +1,4 @@
-import mongoose, { FilterQuery } from 'mongoose'
+import mongoose, { QueryFilter } from 'mongoose'
 import {
   IDbRelationBelongsTo, IDbRelationHasMany, IDbRelationHasOne,
 } from '../../dbClient'
@@ -15,6 +15,9 @@ export const mongooseExecUpdate = async <T>(options: IMongooseUpdateOptions<T>, 
   onBeforeUpdate?: ((options: IMongooseUpdateOptions<T>) => IMongooseUpdateOptions<T> | Promise<IMongooseUpdateOptions<T>>) | undefined
   onAfterUpdate?: ((options: IMongooseUpdateOptions<T>, result?: { modifiedCount: number } | undefined) => void | Promise<void>) | undefined
 }): Promise<T | undefined> => {
+  // TODO-analisar essa funcao
+  // https://chatgpt.com/share/6a8fa396-3690-83e9-bd66-1141ca51e29d
+  // 6ª iteracao
   if (optionsExt.onBeforeUpdate)
     options = await optionsExt.onBeforeUpdate(options)
 
@@ -42,7 +45,10 @@ export const mongooseExecUpdate = async <T>(options: IMongooseUpdateOptions<T>, 
   const session = options.transaction?.session ?? optionsExt.transaction?.session
   const result = await optionsExt.collectionModel.updateOne({
     [optionsExt.keyName]: (options.data as any)[optionsExt.keyName]
-  } as FilterQuery<T>, data as mongoose.UpdateQuery<T>, { new: true, session })
+  } as QueryFilter<T>, data as mongoose.UpdateQuery<T>, { 
+    // new: true, // nao existe mais na versao 9 
+    session 
+  })
 
   // CHILDREN RELATIONS
   if (optionsExt.hasMany?.length)

@@ -10,6 +10,7 @@ import {
   CascadeOptions, ISequelizeSettings, SequelizeEnv, SequelizeGetIncludeWhereResult, SequelizeIncludeResult, SequelizeIndexOptionField, 
   DbConnectionSequelize, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeCrudOptions, ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions,
   ISequelizeGetOptions, ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne, ISequelizeUpdateOptions, SequelizeDataSource, SequelizeTransaction, SequelizeUtils,
+  SequelizeTimestampAttributes, WithoutSequelizeTimestamps, DbConnectionSequelizeOnBeforeSyncResult,
 } from './sequelize'
 
 export enum DataSourceTypes {
@@ -176,7 +177,9 @@ export {
   IRedisDataSource, IRedisDeleteOptions, IRedisGetOptions, RedisConnection, RedisDataSource, RedisSearchDocumentResult, RedisSearchResult, RedisWhere,
 
   // SEQUELIZE
+  DbConnectionSequelizeOnBeforeSyncResult, 
   CascadeOptions, ISequelizeSettings, SequelizeEnv, SequelizeGetIncludeWhereResult, SequelizeIncludeResult, SequelizeIndexOptionField, 
   DbConnectionSequelize, ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeCrudOptions, ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions,
   ISequelizeGetOptions, ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne, ISequelizeUpdateOptions, SequelizeDataSource, SequelizeTransaction, SequelizeUtils,
+  SequelizeTimestampAttributes, WithoutSequelizeTimestamps,
 }

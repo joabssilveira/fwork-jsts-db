@@ -4,9 +4,10 @@ import { SequelizeTransaction } from '../transaction'
 import { sequelizeExecRead } from './read'
 import { IDbGetResult } from '../../dbClient'
 import { ModelDefined, Op } from 'sequelize'
+import { WithoutSequelizeTimestamps } from '../types'
 
 export const sequelizeExecUpdate = async <T extends {}>(options: ISequelizeUpdateOptions<T>, optionsExt: {
-  collectionModel: ModelDefined<T, T>,
+  collectionModel: ModelDefined<T, T | WithoutSequelizeTimestamps<T>>,
   keyName: keyof T,
   transaction?: SequelizeTransaction | undefined,
   belongsTo?: ISequelizeRelationBelongsTo<any, any>[] | undefined

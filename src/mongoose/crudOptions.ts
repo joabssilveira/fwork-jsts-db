@@ -1,4 +1,4 @@
-import { FilterQuery } from 'mongoose'
+import { QueryFilter } from 'mongoose'
 import { IDbBulkCreateOptions, IDbCreateOptions, IDbDeleteByKeyOptions, IDbDeleteOptions, IDbGetOptions, IDbUpdateOptions } from '../dbClient/crudOptions'
 import { MongooseTransaction } from './transaction'
 
@@ -15,7 +15,7 @@ export interface IMongooseCreateOptions<T> extends IDbCreateOptions<T>, IMongoos
 }
 
 export interface IMongooseGetOptions<T> extends IDbGetOptions, IMongooseCrudOptions {
-  where?: FilterQuery<T>,
+  where?: QueryFilter<T>,
   addFields?: Record<string, any>,
 }
 
@@ -24,7 +24,7 @@ export interface IMongooseUpdateOptions<T> extends IDbUpdateOptions<T>, IMongoos
 }
 
 export interface IMongooseDeleteOptions<T> extends IDbDeleteOptions, IMongooseCrudOptions {
-  where: FilterQuery<T>
+  where: QueryFilter<T>
 }
 
 export interface IMongooseDeleteByKeyOptions<keyType> extends IDbDeleteByKeyOptions<keyType>, IMongooseCrudOptions {

@@ -1,7 +1,16 @@
-import { FindAttributeOptions, Includeable, ModelDefined, Op, WhereOptions } from "sequelize";
+import { AddConstraintOptions, BelongsToManyOptions, BelongsToOptions, FindAttributeOptions, HasManyOptions, HasOneOptions, Includeable, ModelDefined, Op, QueryTypes, Sequelize, WhereOptions } from "sequelize";
 import { Fn, Literal } from "sequelize/types/utils";
 import { DataSourceUtils } from "..";
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from "./relations";
+import { StrictOmit } from "fwork-jsts-common";
+
+export type SequelizeBelongsToOptionsExt<SourceType, TargetType> = {
+  as: keyof SourceType;
+  foreignKey: keyof SourceType;
+  targetKey: keyof TargetType;
+  onDelete: CascadeOptions;
+  onUpdate: CascadeOptions;
+} & StrictOmit<BelongsToOptions, 'as' | 'foreignKey' | 'targetKey' | 'onDelete' | 'onUpdate'>
 
 const mongooseToSequelizeOperators: Record<string, symbol> = {
   $eq: Op.eq,
@@ -15,6 +24,7 @@ const mongooseToSequelizeOperators: Record<string, symbol> = {
   $not: Op.not,
   $exists: Op.not,
   $regex: Op.regexp,
+  $ilike: Op.iLike,
 
   $and: Op.and,
   $or: Op.or,
@@ -41,6 +51,64 @@ export type SequelizeIncludeResult = {
 export type CascadeOptions = 'CASCADE' | 'RESTRICT' | 'SET NULL' | 'NO ACTION'
 
 export class SequelizeUtils {
+  static async constraintExistsPostGres(args: {
+    sequelize: Sequelize
+    tableName: string
+    constraintName: string
+    /**
+     * default: "public"
+     */
+    schema?: string
+  }) {
+    const result = await args.sequelize.query<{ exists: boolean }>(`
+    SELECT EXISTS (
+      SELECT 1
+      FROM pg_constraint c
+      INNER JOIN pg_class t
+        ON t.oid = c.conrelid
+      INNER JOIN pg_namespace n
+        ON n.oid = t.relnamespace
+      WHERE n.nspname = :schema
+        AND t.relname = :tableName
+        AND c.conname = :constraintName
+    ) AS exists
+  `, {
+      type: QueryTypes.SELECT,
+      replacements: {
+        schema: args.schema ?? 'public',
+        tableName: args.tableName,
+        constraintName: args.constraintName,
+      }
+    })
+
+    return result[0]?.exists === true
+  }
+
+  static async addConstraintIfNotExists(args: {
+    sequelize: Sequelize,
+    tableName: string,
+    constraintName: string,
+    options: AddConstraintOptions,
+    schema?: string,
+  }) {
+    if (args.sequelize.getDialect() === 'postgres') {
+      const exists = await SequelizeUtils.constraintExistsPostGres({
+        sequelize: args.sequelize,
+        tableName: args.tableName,
+        constraintName: args.constraintName,
+        schema: args.schema,
+      })
+
+      if (exists)
+        return
+    }
+
+    await args.sequelize.getQueryInterface().addConstraint(
+      args.tableName,
+      args.options,
+    )
+  }
+
   static getAttributes = (args: {
     selectedFields?: string | string[],
     excludedFields?: string | string[],
@@ -75,10 +143,10 @@ export class SequelizeUtils {
       targetKey: keyof TargetType;
       onDelete: CascadeOptions;
       onUpdate: CascadeOptions;
-    }
+    } & StrictOmit<BelongsToOptions, 'as' | 'foreignKey' | 'targetKey' | 'onDelete' | 'onUpdate'>
   ) {
     sourceModel.belongsTo(targetModel, {
-      ...options as any,
+      ...options as any
     });
   }
 
@@ -94,10 +162,10 @@ export class SequelizeUtils {
       sourceKey: keyof SourceType;
       onDelete: CascadeOptions;
       onUpdate: CascadeOptions;
-    }
+    } & StrictOmit<HasManyOptions, 'as' | 'foreignKey' | 'sourceKey' | 'onDelete' | 'onUpdate'>
   ) {
     sourceModel.hasMany(targetModel, {
-      ...options as any,
+      ...options as any
     });
   }
 
@@ -113,7 +181,7 @@ export class SequelizeUtils {
       sourceKey: keyof SourceType;
       onDelete: CascadeOptions;
       onUpdate: CascadeOptions;
-    }
+    } & StrictOmit<HasOneOptions, 'as' | 'foreignKey' | 'sourceKey' | 'onDelete' | 'onUpdate'>
   ) {
     sourceModel.hasOne(targetModel, {
       ...options as any,
@@ -133,7 +201,7 @@ export class SequelizeUtils {
       through: string | ModelDefined<any, any>;
       onDelete: CascadeOptions;
       onUpdate: CascadeOptions;
-    }
+    } & StrictOmit<BelongsToManyOptions, 'as' | 'foreignKey' | 'targetKey' | 'onDelete' | 'onUpdate'>
   ) {
     sourceModel.belongsToMany(targetModel, {
       ...options as any,

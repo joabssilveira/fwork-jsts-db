@@ -9,6 +9,7 @@ import { sequelizeExecCreate } from './create'
 import { sequelizeExecDelete } from './delete'
 import { sequelizeExecRead } from './read'
 import { sequelizeExecUpdate } from './update'
+import { WithoutSequelizeTimestamps } from '../types'
 
 export abstract class SequelizeDataSource<T extends {}> implements IDbClientDataSource<
   T,
@@ -21,12 +22,12 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
   ISequelizeDeleteByKeyOptions<any>
 > {
 
-  collectionModel: ModelDefined<T, T>
+  collectionModel: ModelDefined<T, T | WithoutSequelizeTimestamps<T>>
   keyName: keyof T
   transaction: SequelizeTransaction | undefined
 
   constructor(options: {
-    collectionModel: ModelDefined<T, T>,
+    collectionModel: ModelDefined<T, T | WithoutSequelizeTimestamps<T>>,
     keyName: keyof T,
     transaction?: SequelizeTransaction | undefined,
     belongsTo?: ISequelizeRelationBelongsTo<any, any>[] | undefined
@@ -106,12 +107,12 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
-      onBeforeBulkCreate: this.onBeforeBulkCreate,
-      onAfterBulkCreate: this.onAfterBulkCreate,
+      onBeforeBulkCreate: this.onBeforeBulkCreate.bind(this),
+      onAfterBulkCreate: this.onAfterBulkCreate.bind(this),
 
-      overrideMasterOptions: this.overrideBulkCreateMasterOptions,
-      overrideChildrenOptions: this.overrideBulkCreateChildrenOptions,
-      overrideChildOptions: this.overrideBulkCreateChildOptions,
+      overrideMasterOptions: this.overrideBulkCreateMasterOptions.bind(this),
+      overrideChildrenOptions: this.overrideBulkCreateChildrenOptions.bind(this),
+      overrideChildOptions: this.overrideBulkCreateChildOptions.bind(this),
     })
   }
 
@@ -123,12 +124,17 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
-      onBeforeCreate: this.onBeforeCreate,
-      onAfterCreate: this.onAfterCreate,
 
-      overrideMasterOptions: this.overrideCreateMasterOptions,
-      overrideChildrenOptions: this.overrideCreateChildrenOptions,
-      overrideChildOptions: this.overrideCreateChildOptions,
+      // https://chatgpt.com/share/6a88a76c-a768-83e9-9eee-63d3cad22b3c
+      // preciso colocar o .bind(this) pra manter o contexto correto
+      // sem isso, o this é SequelizeDataSource e nao o seu descendente onde a funcao foi chamada
+      // onBeforeCreate: this.onBeforeCreate.bind(this) nao como sujerido nao da certo: o segundo parametro created vem undefined justamente pq nao é passado
+      onBeforeCreate: this.onBeforeCreate.bind(this),
+      onAfterCreate: this.onAfterCreate.bind(this),
+
+      overrideMasterOptions: this.overrideCreateMasterOptions.bind(this),
+      overrideChildrenOptions: this.overrideCreateChildrenOptions.bind(this),
+      overrideChildOptions: this.overrideCreateChildOptions.bind(this),
     })
   }
 
@@ -141,8 +147,8 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
         belongsTo: this.belongsTo,
         hasMany: this.hasMany,
         hasOne: this.hasOne,
-        onBeforeRead: this.onBeforeRead,
-        onAfterRead: this.onAfterRead,
+        onBeforeRead: this.onBeforeRead.bind(this),
+        onAfterRead: this.onAfterRead.bind(this),
       }
     })
   }
@@ -155,8 +161,8 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
-      onBeforeUpdate: this.onBeforeUpdate,
-      onAfterUpdate: this.onAfterUpdate,
+      onBeforeUpdate: this.onBeforeUpdate.bind(this),
+      onAfterUpdate: this.onAfterUpdate.bind(this),
     })
   }
 
@@ -169,10 +175,10 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
-      onBeforeDelete: this.onBeforeDelete,
-      onAfterDelete: this.onAfterDelete,
-      onBeforeRead: this.onBeforeRead,
-      onAfterRead: this.onAfterRead,
+      onBeforeDelete: this.onBeforeDelete.bind(this),
+      onAfterDelete: this.onAfterDelete.bind(this),
+      onBeforeRead: this.onBeforeRead.bind(this),
+      onAfterRead: this.onAfterRead.bind(this),
     })
   }
 }
