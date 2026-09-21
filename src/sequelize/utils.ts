@@ -222,39 +222,43 @@ export class SequelizeUtils {
     for (const key in where) {
       const value = where[key];
 
-      // Verifica se é um operador lógico ($and, $or, etc.)
-      if (mongooseToSequelizeOperators[key]) {
-        (whereOptions as any)[mongooseToSequelizeOperators[key]] = value.map((v: any) =>
-          SequelizeUtils.whereToWhereOptions<T>(v, regexAsLike)
-        );
-      }
-      // Se for uma consulta direta com operadores ($gt, $lt, $regex, etc.)
-      else if (typeof value === 'object' && !Array.isArray(value)) {
-        whereOptions[key] = {};
-        for (const operator in value) {
-          if (mongooseToSequelizeOperators[operator]) {
-            if (operator === '$regex') {
-              // Tratamento especial para $regex
-              const regexValue = value[operator];
-              if (typeof regexValue === 'string') {
-                // Aqui usamos Op.iRegexp para correspondência case-insensitive, caso necessário
-                // (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = regexAsLike ? `%${regexValue}%` : regexValue;
-                (whereOptions[key] as any)[regexAsLike ? Op.iLike : Op.regexp] = regexAsLike ? `%${regexValue}%` : regexValue;
-              } else if (regexValue instanceof RegExp) {
-                // Se for uma instância de RegExp, também podemos usá-la diretamente
-                // (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = regexAsLike ? `%${regexValue.source}%` : regexValue.source;
-                (whereOptions[key] as any)[regexAsLike ? Op.iLike : Op.regexp] = regexAsLike ? `%${regexValue.source}%` : regexValue.source;
+      if (value == null) {
+        whereOptions[key] = value;
+      } else {
+        // Verifica se é um operador lógico ($and, $or, etc.)
+        if (mongooseToSequelizeOperators[key]) {
+          (whereOptions as any)[mongooseToSequelizeOperators[key]] = value.map((v: any) =>
+            SequelizeUtils.whereToWhereOptions<T>(v, regexAsLike)
+          );
+        }
+        // Se for uma consulta direta com operadores ($gt, $lt, $regex, etc.)
+        else if (typeof value === 'object' && !Array.isArray(value)) {
+          whereOptions[key] = {};
+          for (const operator in value) {
+            if (mongooseToSequelizeOperators[operator]) {
+              if (operator === '$regex') {
+                // Tratamento especial para $regex
+                const regexValue = value[operator];
+                if (typeof regexValue === 'string') {
+                  // Aqui usamos Op.iRegexp para correspondência case-insensitive, caso necessário
+                  // (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = regexAsLike ? `%${regexValue}%` : regexValue;
+                  (whereOptions[key] as any)[regexAsLike ? Op.iLike : Op.regexp] = regexAsLike ? `%${regexValue}%` : regexValue;
+                } else if (regexValue instanceof RegExp) {
+                  // Se for uma instância de RegExp, também podemos usá-la diretamente
+                  // (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = regexAsLike ? `%${regexValue.source}%` : regexValue.source;
+                  (whereOptions[key] as any)[regexAsLike ? Op.iLike : Op.regexp] = regexAsLike ? `%${regexValue.source}%` : regexValue.source;
+                }
+              } else {
+                // Tratamento normal dos outros operadores
+                (whereOptions[key] as any)[mongooseToSequelizeOperators[operator]] = value[operator];
               }
-            } else {
-              // Tratamento normal dos outros operadores
-              (whereOptions[key] as any)[mongooseToSequelizeOperators[operator]] = value[operator];
             }
           }
         }
-      }
-      // Igualdade simples
-      else {
-        whereOptions[key] = value;
+        // Igualdade simples
+        else {
+          whereOptions[key] = value;
+        }
       }
     }
 
