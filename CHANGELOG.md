@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.19](https://github.com/joabssilveira/fwork-jsts-db/compare/v2.0.18...v2.0.19) (2026-09-21)
+
+
+### Bug Fixes
+
+* sequelize whereOptions error ([5558b66](https://github.com/joabssilveira/fwork-jsts-db/commit/5558b662e0b5b91ec74a98f7f2b519215a89d103))
+
 ### [2.0.18](https://github.com/joabssilveira/fwork-jsts-db/compare/v2.0.17...v2.0.18) (2026-09-21)
 
 ### [2.0.17](https://github.com/joabssilveira/fwork-jsts-db/compare/v2.0.16...v2.0.17) (2026-09-09)
