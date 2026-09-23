@@ -1,8 +1,8 @@
+import { StrictOmit } from "fwork-jsts-common";
 import { AddConstraintOptions, BelongsToManyOptions, BelongsToOptions, FindAttributeOptions, HasManyOptions, HasOneOptions, Includeable, ModelDefined, Op, QueryTypes, Sequelize, WhereOptions } from "sequelize";
 import { Fn, Literal } from "sequelize/types/utils";
 import { DataSourceUtils } from "..";
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from "./relations";
-import { StrictOmit } from "fwork-jsts-common";
 
 export type SequelizeBelongsToOptionsExt<SourceType, TargetType> = {
   as: keyof SourceType;
@@ -237,16 +237,18 @@ export class SequelizeUtils {
           for (const operator in value) {
             if (mongooseToSequelizeOperators[operator]) {
               if (operator === '$regex') {
-                // Tratamento especial para $regex
                 const regexValue = value[operator];
                 if (typeof regexValue === 'string') {
-                  // Aqui usamos Op.iRegexp para correspondência case-insensitive, caso necessário
-                  // (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = regexAsLike ? `%${regexValue}%` : regexValue;
                   (whereOptions[key] as any)[regexAsLike ? Op.iLike : Op.regexp] = regexAsLike ? `%${regexValue}%` : regexValue;
                 } else if (regexValue instanceof RegExp) {
-                  // Se for uma instância de RegExp, também podemos usá-la diretamente
-                  // (whereOptions[key] as any)[regexAsLike ? Op.like : Op.regexp] = regexAsLike ? `%${regexValue.source}%` : regexValue.source;
                   (whereOptions[key] as any)[regexAsLike ? Op.iLike : Op.regexp] = regexAsLike ? `%${regexValue.source}%` : regexValue.source;
+                }
+              } else if (operator === '$ilike' || operator == '$like') {
+                const ilikeValue = value[operator];
+                if (typeof ilikeValue === 'string') {
+                  (whereOptions[key] as any)[operator === '$ilike' ? Op.iLike : Op.like] = `%${ilikeValue}%`;
+                } else if (ilikeValue instanceof RegExp) {
+                  (whereOptions[key] as any)[operator === '$ilike' ? Op.iLike : Op.like] = `%${ilikeValue.source}%`;
                 }
               } else {
                 // Tratamento normal dos outros operadores
