@@ -6,7 +6,7 @@
     "@redis/search": "1.1.3",
     "@types/pg": "8.23.1",
     "dotenv": "17.4.2",
-    "fwork-jsts-common": "2.0.21",
+    "fwork-jsts-common": "2.1.0",
     "husky": "9.1.7",
     "mongoose": "9.9.4",
     "mysql2": "3.24.2",
@@ -48,7 +48,7 @@
   "peerDependencies": {
     "@redis/search": "^1.1.3",
     "dotenv": "^17.4.2",
-    "fwork-jsts-common": "^2.0.21",
+    "fwork-jsts-common": "^2.1.0",
     "mongoose": "^9.9.4",
     "mysql2": "^3.24.2",
     "pg": "^8.23.0",
@@ -70,5 +70,5 @@
     "release": "standard-version"
   },
   "types": "dist/types/index.d.ts",
-  "version": "2.0.22"
+  "version": "2.0.23"
 }
