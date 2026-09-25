@@ -392,58 +392,93 @@ export class SequelizeUtils {
     return result
   }
 
-  static addDollarToNestedFields_Bkp_FuncionandoSemOsSymbols(whereOptions: WhereOptions): WhereOptions {
-    if (Array.isArray(whereOptions)) {
-      // Se for um array (ex: [Op.or]), processa cada elemento recursivamente
-      return whereOptions.map(SequelizeUtils.addDollarToNestedFields) as WhereOptions;
-    } else if (typeof whereOptions === 'object' && whereOptions !== null) {
-      let entries = Object.entries(whereOptions)
-      for (const [key, value] of entries) {
-        if (key.includes('.') && !key.startsWith('$') && !key.endsWith('$')) {
-          (whereOptions as any)[`$${key}$`] = SequelizeUtils.addDollarToNestedFields(value as WhereOptions);
-          delete (whereOptions as any)[key]
-        } else {
-          (whereOptions as any)[key] = SequelizeUtils.addDollarToNestedFields(value as WhereOptions);
-        }
-      }
+  static addDollarToNestedFields(
+    whereOptions: WhereOptions,
+    model: ModelDefined<any, any>
+  ): WhereOptions {
+    // 1. Caso seja nulo ou não seja objeto/array, retorna o próprio valor primitivo
+    if (whereOptions === null || typeof whereOptions !== 'object') {
+      return whereOptions;
     }
 
-    // Se for um valor primitivo (número, string, booleano, etc.), retorna diretamente
-    return whereOptions;
+    // 2. Se for Array (ex: [ { 'user.name': 'John' }, { 'user.age': 30 } ])
+    if (Array.isArray(whereOptions)) {
+      return whereOptions.map((item) =>
+        SequelizeUtils.addDollarToNestedFields(item, model)
+      ) as WhereOptions;
+    }
+
+    // 3. Se for um Objeto simples
+    const result: any = {};
+
+    // Processa chaves em String/Texto
+    for (const [key, value] of Object.entries(whereOptions)) {
+      // Adiciona $ no início e no fim caso seja uma chave aninhada com ponto (ex: 'user.profile.id')
+      const formattedKey = (() => {
+        if (key.includes('.') && !key.startsWith('$') && !key.endsWith('$')) {
+          const splitted = key.split('.')
+          const last = splitted[splitted.length - 1]
+
+          const nModel = SequelizeUtils.getModelFromPath(model, key)
+          const attributes = nModel.getAttributes();
+          const attribute = attributes[last];
+
+          if (attribute.field) {
+            splitted[splitted.length - 1] = attribute.field
+            const nKey = splitted.join('.')
+
+            return `$${nKey}$`
+          }
+
+          return `$${key}$`
+        }
+
+        return key
+      })();
+
+      result[formattedKey] = SequelizeUtils.addDollarToNestedFields(value as WhereOptions, model);
+    }
+
+    // Processa chaves baseadas em Symbol (ex: Op.or, Op.and, Op.eq)
+    const symbols = Object.getOwnPropertySymbols(whereOptions);
+    for (const symbol of symbols) {
+      const symbolValue = (whereOptions as any)[symbol];
+      result[symbol] = SequelizeUtils.addDollarToNestedFields(symbolValue as WhereOptions, model);
+    }
+
+    return result as WhereOptions;
   }
 
-  static addDollarToNestedFields(whereOptions: WhereOptions): WhereOptions {
-    if (Array.isArray(whereOptions)) {
-      // Se for um array (ex: [Op.or]), processa cada elemento recursivamente
-      return whereOptions.map(SequelizeUtils.addDollarToNestedFields) as WhereOptions;
-    } else if (typeof whereOptions === 'object' && whereOptions !== null) {
-      let entries = Object.entries(whereOptions);
-      for (const [key, value] of entries) {
-        if (key.includes('.') && !key.startsWith('$') && !key.endsWith('$')) {
-          // Adiciona $ no início e no fim da chave, se não tiver
-          (whereOptions as any)[`$${key}$`] = SequelizeUtils.addDollarToNestedFields(value as WhereOptions);
-          delete (whereOptions as any)[key];
-        } else {
-          (whereOptions as any)[key] = SequelizeUtils.addDollarToNestedFields(value as WhereOptions);
-        }
+  /**
+   * Retorna o modelo final de um caminho de associações no Sequelize.
+   * 
+   * @param {typeof import('sequelize').Model} BaseModel - O modelo de origem (ex: Usuario)
+   * @param {string} path - O caminho em formato string (ex: 'perfil.endereco.cidade.nome'), o ultimo elemento apos o split é um atributo e nao um modelo
+   * @returns {typeof import('sequelize').Model} O último Model encontrado no caminho
+   */
+  static getModelFromPath(BaseModel: ModelDefined<any, any>, path: string) {
+    const parts = path.split('.');
+
+    // Remove o último elemento, pois ele é o atributo (ex: 'att_no_child_level2')
+    const associationKeys = parts.slice(0, -1);
+
+    let currentModel = BaseModel;
+
+    for (const key of associationKeys) {
+      const association = currentModel.associations[key];
+
+      if (!association) {
+        throw new Error(
+          `Associação '${key}' não foi encontrada no modelo '${currentModel.name}'. ` +
+          `Verifique se o alias/associação foi definido corretamente.`
+        );
       }
 
-      // Processa também os símbolos de operadores (como Op.and, Op.or, etc.)
-      const symbols = Object.getOwnPropertySymbols(whereOptions);
-      for (const symbol of symbols) {
-        const symbolValue = (whereOptions as any)[symbol];
-        if (Array.isArray(symbolValue)) {
-          // Se o valor do símbolo for um array, mapeia cada elemento recursivamente
-          (whereOptions as any)[symbol] = symbolValue.map(SequelizeUtils.addDollarToNestedFields);
-        } else if (typeof symbolValue === 'object' && symbolValue !== null) {
-          // Se o valor do símbolo for um objeto, processa recursivamente
-          (whereOptions as any)[symbol] = SequelizeUtils.addDollarToNestedFields(symbolValue as WhereOptions);
-        }
-      }
+      // Navega para o próximo modelo da associação
+      currentModel = association.target;
     }
 
-    // Retorna whereOptions diretamente se for um valor primitivo
-    return whereOptions;
+    return currentModel;
   }
 
   // 

@@ -34,7 +34,7 @@ export const sequelizeExecRead = async <T extends {}>(args: {
 
   if (options?.where) {
     options.where = getIncludeResult?.updatedWhere
-    options.where = SequelizeUtils.addDollarToNestedFields(options.where!)
+    options.where = SequelizeUtils.addDollarToNestedFields(options.where!, optionsExt.collectionModel)
   }
 
   let attributes: FindAttributeOptions | undefined = SequelizeUtils.getAttributes({
@@ -48,7 +48,7 @@ export const sequelizeExecRead = async <T extends {}>(args: {
   const transaction = options?.transaction || optionsExt.transaction
 
   if (options?.where)
-    options.where = SequelizeUtils.addDollarToNestedFields(options?.where)
+    options.where = SequelizeUtils.addDollarToNestedFields(options?.where, optionsExt.collectionModel)
   const readed = (await optionsExt.collectionModel!.findAll({
     where: options?.where,
     include: getIncludeResult?.includes,
@@ -60,6 +60,7 @@ export const sequelizeExecRead = async <T extends {}>(args: {
 
   const readedCount = skip || options?.limit ? await optionsExt.collectionModel!.count({
     where: options?.where,
+    include: getIncludeResult?.includes,
     transaction: transaction?.transactionObj,
   }) : readed.length
 
