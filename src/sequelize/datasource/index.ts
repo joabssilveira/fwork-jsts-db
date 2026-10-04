@@ -4,12 +4,12 @@ import { IDbGetResult } from '../../dbClient/results'
 import { ISequelizeBulkCreateOptions, ISequelizeCreateOptions, ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions, ISequelizeGetOptions, ISequelizeUpdateOptions } from '../crudOptions'
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from '../relations'
 import { SequelizeTransaction } from '../transaction'
+import { WithoutSequelizeTimestamps } from '../types'
 import { sequelizeExecBulkCreate } from './bulkCreate'
 import { sequelizeExecCreate } from './create'
 import { sequelizeExecDelete } from './delete'
 import { sequelizeExecRead } from './read'
 import { sequelizeExecUpdate } from './update'
-import { WithoutSequelizeTimestamps } from '../types'
 
 export abstract class SequelizeDataSource<T extends {}> implements IDbClientDataSource<
   T,
@@ -100,10 +100,12 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
   }
 
   async bulkCreate(options: ISequelizeBulkCreateOptions<T>): Promise<T[] | undefined> {
-    return sequelizeExecBulkCreate(options, {
+    return sequelizeExecBulkCreate({
+      ...options,
+      transaction: options.transaction ?? this.transaction,
+    }, {
       collectionModel: this.collectionModel,
       keyName: this.keyName,
-      transaction: options.transaction ?? this.transaction,
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
@@ -117,10 +119,12 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
   }
 
   async create(options: ISequelizeCreateOptions<T>): Promise<T | undefined> {
-    return sequelizeExecCreate(options, {
+    return sequelizeExecCreate({
+      ...options,
+      transaction: options.transaction ?? this.transaction,
+    }, {
       collectionModel: this.collectionModel,
       keyName: this.keyName,
-      transaction: options.transaction ?? this.transaction,
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
@@ -140,10 +144,12 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
 
   async read(options?: ISequelizeGetOptions<T> | undefined): Promise<IDbGetResult<T[]> | undefined> {
     return sequelizeExecRead({
-      options,
+      options: {
+        ...options,
+        transaction: options?.transaction ?? this.transaction,
+      },
       optionsExt: {
         collectionModel: this.collectionModel,
-        transaction: options?.transaction ?? this.transaction,
         belongsTo: this.belongsTo,
         hasMany: this.hasMany,
         hasOne: this.hasOne,
@@ -154,10 +160,12 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
   }
 
   async update(options: ISequelizeUpdateOptions<T>): Promise<T | undefined> {
-    return sequelizeExecUpdate(options, {
+    return sequelizeExecUpdate({
+      ...options,
+      transaction: options.transaction ?? this.transaction,
+    }, {
       collectionModel: this.collectionModel,
       keyName: this.keyName,
-      transaction: options.transaction ?? this.transaction,
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,
@@ -167,11 +175,12 @@ export abstract class SequelizeDataSource<T extends {}> implements IDbClientData
   }
 
   async delete(options: ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>): Promise<number> {
-    return sequelizeExecDelete(
-      options, {
+    return sequelizeExecDelete({
+      ...options,
+      transaction: options.transaction ?? this.transaction,
+    }, {
       collectionModel: this.collectionModel,
       keyName: this.keyName,
-      transaction: options.transaction ?? this.transaction,
       belongsTo: this.belongsTo,
       hasMany: this.hasMany,
       hasOne: this.hasOne,

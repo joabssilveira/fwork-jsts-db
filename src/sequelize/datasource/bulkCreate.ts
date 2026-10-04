@@ -1,16 +1,14 @@
 import { StringUtils } from 'fwork-jsts-common'
+import { ModelDefined } from 'sequelize'
 import { MakeNullishOptional } from 'sequelize/types/utils'
 import { uuidv7 } from 'uuidv7'
 import { ISequelizeBulkCreateOptions } from '../crudOptions'
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from '../relations'
-import { SequelizeTransaction } from '../transaction'
-import { ModelDefined } from 'sequelize'
 import { WithoutSequelizeTimestamps } from '../types'
 
 export const sequelizeExecBulkCreate = async <T extends {}>(options: ISequelizeBulkCreateOptions<T>, optionsExt: {
   collectionModel: ModelDefined<T, T | WithoutSequelizeTimestamps<T>>,
   keyName: keyof T,
-  transaction?: SequelizeTransaction | undefined,
   belongsTo?: ISequelizeRelationBelongsTo<any, any>[] | undefined,
   hasMany?: ISequelizeRelationHasMany<any, any>[] | undefined,
   hasOne?: ISequelizeRelationHasOne<any, any>[] | undefined,
@@ -51,8 +49,7 @@ export const sequelizeExecBulkCreate = async <T extends {}>(options: ISequelizeB
   }
 
   // TODO-specific sequelize
-  const transaction = options.transaction ?? optionsExt.transaction
-  const createdResponse = await optionsExt.collectionModel!.bulkCreate(options.data as unknown as MakeNullishOptional<T>[], { transaction: transaction?.transactionObj })
+  const createdResponse = await optionsExt.collectionModel!.bulkCreate(options.data as unknown as MakeNullishOptional<T>[], { transaction: options.transaction?.transactionObj })
   const createdList = createdResponse.map(i => i.get({ plain: true }))
 
   // CHILDREN RELATIONS

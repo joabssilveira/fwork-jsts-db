@@ -2,15 +2,13 @@ import { FindAttributeOptions, ModelDefined } from 'sequelize'
 import { IDbGetResult } from '../../dbClient/results'
 import { ISequelizeGetOptions } from '../crudOptions'
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from '../relations'
-import { SequelizeTransaction } from '../transaction'
-import { SequelizeIncludeResult, SequelizeUtils } from '../utils'
 import { WithoutSequelizeTimestamps } from '../types'
+import { SequelizeIncludeResult, SequelizeUtils } from '../utils'
 
 export const sequelizeExecRead = async <T extends {}>(args: {
   options?: ISequelizeGetOptions<T> | undefined,
   optionsExt: {
     collectionModel: ModelDefined<T, T | WithoutSequelizeTimestamps<T>>,
-    transaction?: SequelizeTransaction | undefined,
     belongsTo?: ISequelizeRelationBelongsTo<any, any>[] | undefined
     hasMany?: ISequelizeRelationHasMany<any, any>[] | undefined
     hasOne?: ISequelizeRelationHasOne<any, any>[] | undefined
@@ -19,7 +17,7 @@ export const sequelizeExecRead = async <T extends {}>(args: {
   }
 }): Promise<IDbGetResult<T[]> | undefined> => {
   let { options, optionsExt } = args
-  
+
   if (optionsExt.onBeforeRead)
     options = await optionsExt.onBeforeRead(options)
 
@@ -45,15 +43,13 @@ export const sequelizeExecRead = async <T extends {}>(args: {
   const skip = (options?.skip || (((options?.limit || 0) * (options?.page || 1)) - (options?.limit || 0)))
   const page = (options?.page || ((skip / (options?.limit || 1)) + 1))
 
-  const transaction = options?.transaction || optionsExt.transaction
-
   if (options?.where)
     options.where = SequelizeUtils.addDollarToNestedFields(options?.where, optionsExt.collectionModel)
   const readed = (await optionsExt.collectionModel!.findAll({
     where: options?.where,
     include: getIncludeResult?.includes,
     attributes,
-    transaction: transaction?.transactionObj,
+    transaction: options?.transaction?.transactionObj,
     offset: skip,
     limit: options?.limit
   })).map(i => i.get({ plain: true }))
@@ -61,7 +57,7 @@ export const sequelizeExecRead = async <T extends {}>(args: {
   const readedCount = skip || options?.limit ? await optionsExt.collectionModel!.count({
     where: options?.where,
     include: getIncludeResult?.includes,
-    transaction: transaction?.transactionObj,
+    transaction: options?.transaction?.transactionObj,
   }) : readed.length
 
   const result: IDbGetResult<T[]> = {

@@ -1,15 +1,13 @@
 import { ModelDefined, WhereOptions } from 'sequelize'
+import { IDbGetResult } from '../../dbClient'
 import { ISequelizeDeleteByKeyOptions, ISequelizeDeleteOptions, ISequelizeGetOptions } from '../crudOptions'
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from '../relations'
-import { SequelizeTransaction } from '../transaction'
-import { sequelizeExecRead } from './read'
-import { IDbGetResult } from '../../dbClient'
 import { WithoutSequelizeTimestamps } from '../types'
+import { sequelizeExecRead } from './read'
 
 export const sequelizeExecDelete = async <T extends {}>(options: ISequelizeDeleteOptions<T> | ISequelizeDeleteByKeyOptions<any>, optionsExt: {
   collectionModel: ModelDefined<T, T | WithoutSequelizeTimestamps<T>>,
   keyName: keyof T,
-  transaction?: SequelizeTransaction | undefined,
   belongsTo?: ISequelizeRelationBelongsTo<any, any>[] | undefined
   hasMany?: ISequelizeRelationHasMany<any, any>[] | undefined
   hasOne?: ISequelizeRelationHasOne<any, any>[] | undefined
@@ -57,13 +55,12 @@ export const sequelizeExecDelete = async <T extends {}>(options: ISequelizeDelet
   }
 
   // TODO-specific sequelize
-  const transaction = options?.transaction || optionsExt.transaction
   const result =
     await optionsExt.collectionModel!.destroy({
       where: (options as ISequelizeDeleteByKeyOptions<any>).key ? {
         [optionsExt.keyName]: (options as ISequelizeDeleteByKeyOptions<any>).key
       } as WhereOptions<T> : (options as ISequelizeDeleteOptions<T>).where,
-      transaction: transaction?.transactionObj
+      transaction: options.transaction?.transactionObj
     })
 
   if (optionsExt.onAfterDelete)

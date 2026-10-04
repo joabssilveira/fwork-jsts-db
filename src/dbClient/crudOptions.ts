@@ -1,5 +1,5 @@
 export interface IDbBulkCreateOptions<T> {
-  data: T[]
+  data: T[],
 }
 
 export interface IDbCreateOptions<T> {

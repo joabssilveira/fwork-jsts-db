@@ -1,15 +1,13 @@
+import { ModelDefined, Op } from 'sequelize'
+import { IDbGetResult } from '../../dbClient'
 import { ISequelizeGetOptions, ISequelizeUpdateOptions } from '../crudOptions'
 import { ISequelizeRelationBelongsTo, ISequelizeRelationHasMany, ISequelizeRelationHasOne } from '../relations'
-import { SequelizeTransaction } from '../transaction'
-import { sequelizeExecRead } from './read'
-import { IDbGetResult } from '../../dbClient'
-import { ModelDefined, Op } from 'sequelize'
 import { WithoutSequelizeTimestamps } from '../types'
+import { sequelizeExecRead } from './read'
 
 export const sequelizeExecUpdate = async <T extends {}>(options: ISequelizeUpdateOptions<T>, optionsExt: {
   collectionModel: ModelDefined<T, T | WithoutSequelizeTimestamps<T>>,
   keyName: keyof T,
-  transaction?: SequelizeTransaction | undefined,
   belongsTo?: ISequelizeRelationBelongsTo<any, any>[] | undefined
   hasMany?: ISequelizeRelationHasMany<any, any>[] | undefined
   hasOne?: ISequelizeRelationHasOne<any, any>[] | undefined
@@ -34,12 +32,11 @@ export const sequelizeExecUpdate = async <T extends {}>(options: ISequelizeUpdat
       }
     }
 
-  const transaction = options?.transaction ?? optionsExt.transaction
   const update = await optionsExt.collectionModel!.update(options.data, {
     where: {
       [optionsExt.keyName]: (options.data as any)[optionsExt.keyName]
     } as any,
-    transaction: transaction?.transactionObj
+    transaction: options.transaction?.transactionObj
   })
 
   // CHILDREN RELATIONS
@@ -130,10 +127,10 @@ export const sequelizeExecUpdate = async <T extends {}>(options: ISequelizeUpdat
         where: {
           [optionsExt.keyName]: (options.data as any)[optionsExt.keyName]
         } as any,
+        transaction: options.transaction,
       },
       optionsExt: {
         collectionModel: optionsExt.collectionModel,
-        transaction,
         belongsTo: optionsExt.belongsTo,
         hasMany: optionsExt.hasMany,
         hasOne: optionsExt.hasOne,
