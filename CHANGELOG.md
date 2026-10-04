@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.24](https://github.com/joabssilveira/fwork-jsts-db/compare/v2.0.23...v2.0.24) (2026-10-04)
+
+
+### Bug Fixes
+
+* sequelize $deep.filter$ ([a83a52a](https://github.com/joabssilveira/fwork-jsts-db/commit/a83a52a3e2c64a0b2984bc29045fd7f04e65ecd2))
+
 ### [2.0.23](https://github.com/joabssilveira/fwork-jsts-db/compare/v2.0.22...v2.0.23) (2026-09-25)
 
 ### [2.0.22](https://github.com/joabssilveira/fwork-jsts-db/compare/v2.0.21...v2.0.22) (2026-09-23)
